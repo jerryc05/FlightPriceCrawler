@@ -24,7 +24,7 @@ class Flight implements Comparable<Flight> {
             space = "\t";
         return airlineFlightNumber + space + startTime + "->" + endTime
                 + "\t" + departureAirport + " -> " + arrivalAirport + "\t\tAccu: " + accuracy + "\t"
-                + price + "\t" + discountRate + "\t [" + proxy + ".com]\t  " + model;
+                + price + "\t" + discountRate + "\t [" + proxy + ".com]\t" + model;
     }
 
     @Override

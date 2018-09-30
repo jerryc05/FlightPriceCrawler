@@ -1,6 +1,8 @@
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FlightPriceCollection {
+
     public static void main(String[] args) {
 
         Scanner scan = new Scanner(System.in);
@@ -43,26 +46,50 @@ public class FlightPriceCollection {
             driver.get("https://flights.ctrip.com/itinerary/roundtrip/"
                     + departureAirport + "-" + arrivalAirport + "?date=" + departDate + "%2" + returnDate);//,
         }
-
+        ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
         //output
-        System.out.println("\n\t====== Showing at most 20 flights sorted by price ======\n");
+        System.out.println("\n\t====== Showing at most 50 flights sorted by price ======\n");
         System.out.println(driver.getTitle() + "\n");
         ArrayList<Flight> flights = new ArrayList<>();
-        String prefix, airlineFlightNumber, model, startTime, endTime, departureAp, arrivalAp, accuracy, discountRate, price;
-        long current;//todo
-        for (int i = 1; i <= 20; i++) {
-            current = System.currentTimeMillis();//todo
-            prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(" + i + ") > div";
-            if (driver.findElementsByCssSelector(prefix.substring(0, prefix.length() - 6)).size() == 0)
-                prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(" + i + ") > div";
+        String prefix, suffix4Price = " > div.inb.price.child_price.lowest_price",
+                airlineFlightNumber, model, startTime, endTime, departureAp, arrivalAp, accuracy, discountRate, price;
+        int divStart = 1;
+//        long current;
+        for (int i = 1; i <= 50; i++) {
+//            current = System.currentTimeMillis();
+            prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child("
+                    + divStart + ") > div:nth-child(1) > div:nth-child(" + i + ") > div";
+            if (i == 1) {
+                if (isElementNotPresent(driver, prefix + " > div.inb.logo")) {
+                    divStart = 3 - divStart;
+                    prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child("
+                            + divStart + ") > div:nth-child(1) > div:nth-child(" + i + ") > div";
+                    if (isElementNotPresent(driver, prefix + " > div.inb.logo")) {
+                        prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child("
+                                + divStart + ") > div > div:nth-child(" + i + ") > div";
+                        if (isElementNotPresent(driver, prefix + " > div.inb.logo")) {
+                            divStart = 3 - divStart;
+                            prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child("
+                                    + divStart + ") > div > div:nth-child(" + i + ") > div";
+                            if (isElementNotPresent(driver, prefix + " > div.inb.logo")) {
+                                System.out.println("\n\t====== ERROR: Analyze css selector failed! ======\n");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+//            System.out.println("\tprefix init finished " + i + " = " + (System.currentTimeMillis() - current) / 1000d);
+//            System.out.println(prefix);
             try {
                 airlineFlightNumber = driver.findElementByCssSelector(prefix + " > div.inb.logo > div.logo-item.flight_logo > div > span").getText();
             } catch (NoSuchElementException e) {
-                System.out.println("Got " + (i - 1) + " flight(s) in total.");
+                System.out.println("\n\t====== Got " + (i - 1) + " flight(s) in total ======");
                 break;
             }
+//            System.out.println("\tairline finished " + i + " = " + (System.currentTimeMillis() - current) / 1000d);
             model = driver.findElementByCssSelector(prefix + " > div.inb.logo > div:nth-child(2)").getText();
             startTime = driver.findElementByCssSelector(prefix + " > div.inb.right > div.time_box > strong").getText();
             endTime = driver.findElementByCssSelector(prefix + " > div.inb.left > div.time_box > strong").getText();
@@ -71,22 +98,29 @@ public class FlightPriceCollection {
             accuracy = driver.findElementByCssSelector(prefix + " > div.inb.service > div > div > div").getText();
             if (accuracy.equals("-"))
                 accuracy = "N/A";
-            System.out.println("\texec " + i + " =1= " + (System.currentTimeMillis() - current) / 1000d);
             try {
-                discountRate = driver.findElementByCssSelector(prefix + " > div.inb.price.child_price.lowest_price > div > div > span").getText();
-                price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price.lowest_price > div > span").getText();
-                System.out.println("\texec " + i + " =1.1= " + (System.currentTimeMillis() - current) / 1000d);
+                discountRate = driver.findElementByCssSelector(prefix + suffix4Price + " > div > div > span").getText();
+                price = driver.findElementByCssSelector(prefix + suffix4Price + " >  div > span").getText();
             } catch (NoSuchElementException e) {
-                discountRate = driver.findElementByCssSelector(prefix + " > div.inb.price.child_price > div > div > span").getText();
-                price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price > div > span").getText();
-                System.out.println("\texec " + i + " =1.2= " + (System.currentTimeMillis() - current) / 1000d);
+                System.out.println("====== ↑ Lowest price seperator ↑ ======");
+                suffix4Price = " > div.inb.price.child_price";
+                discountRate = driver.findElementByCssSelector(prefix + suffix4Price + " > div > div > span").getText();
+                price = driver.findElementByCssSelector(prefix + suffix4Price + " >  div > span").getText();
             }
-            System.out.println("\texec " + i + " =2= " + (System.currentTimeMillis() - current) / 1000d);
             Flight flight = new Flight(airlineFlightNumber, model, startTime, endTime,
                     departureAp, arrivalAp, accuracy, discountRate, price, "Ctrip");
             flights.add(flight);
-            System.out.println("\texec " + i + " =0= " + (System.currentTimeMillis() - current) / 1000d);//todo
+//            System.out.println("\tfinal " + i + " = " + (System.currentTimeMillis() - current) / 1000d);
             System.out.println(flight);
+        }
+    }
+
+    private static boolean isElementNotPresent(RemoteWebDriver driver, String string) {
+        try {
+            driver.findElementByCssSelector(string);
+            return false;
+        } catch (NoSuchElementException e) {
+            return true;
         }
     }
 }
