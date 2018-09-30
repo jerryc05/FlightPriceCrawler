@@ -19,14 +19,12 @@ class Flight implements Comparable<Flight> {
 
     @Override
     public String toString() {
-        String space;
+        String space = "\t\t";
         if (airlineFlightNumber.contains("共享"))
             space = "\t";
-        else
-            space = "\t\t";
         return airlineFlightNumber + space + startTime + "->" + endTime
                 + "\t" + departureAirport + " -> " + arrivalAirport + "\t\tAccu: " + accuracy + "\t"
-                + price + "\t" + discountRate + "\t(" + proxy + ")\t" + model;
+                + price + "\t" + discountRate + "\t [" + proxy + ".com]\t  " + model;
     }
 
     @Override

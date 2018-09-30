@@ -65,6 +65,8 @@ public class FlightPriceCollection {
                 departureAp = driver.findElementByCssSelector(prefix + " > div.inb.right > div.airport").getText();
                 arrivalAp = driver.findElementByCssSelector(prefix + " > div.inb.left > div.airport").getText();
                 accuracy = driver.findElementByCssSelector(prefix + " > div.inb.service > div > div > div").getText();
+                if (accuracy.equals("-"))
+                    accuracy = "N/A";
                 List<WebElement> list = driver.findElementsByCssSelector(prefix + " > div.inb.price.child_price.lowest_price > div > div > span");
                 if (list.size() != 0) {
                     discountRate = list.get(0).getText();
@@ -74,7 +76,7 @@ public class FlightPriceCollection {
                     price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price > div > span").getText();
                 }
                 Flight flight = new Flight(airlineFlightNumber, model, startTime, endTime,
-                        departureAp, arrivalAp, accuracy, discountRate, price,"Ctrip");
+                        departureAp, arrivalAp, accuracy, discountRate, price, "Ctrip");
                 flights.add(flight);
                 System.out.println(flight);
             } catch (NoSuchElementException e) {
