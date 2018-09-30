@@ -7,6 +7,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,17 +19,20 @@ public class FlightPriceCollection {
         Scanner scan = new Scanner(System.in);
 
         //input
-        System.out.print("Input departure airport code in 3 characters: ");
-        final String departureAirport = scan.nextLine().trim().substring(0, 3);
-        System.out.print("Input   arrival airport code in 3 characters: ");
-        final String arrivalAirport = scan.nextLine().trim().substring(0, 3);
-        System.out.print("Input departure date in           yyyy-mm-dd: ");
-        final String departDate = scan.nextLine().trim().substring(0, 10);
-        System.out.print("Input return date in yyyy-mm-dd (blank for one-way trip): ");
-        String returnDate = scan.nextLine().trim();
-        System.out.println("\n\t====== Processing, please wait... ======\n");
+        CompletableFuture<String[]> completableFuture = CompletableFuture.supplyAsync(() -> {
+            System.out.print("Input departure airport code in 3 characters: ");
+            final String departureAirport = scan.nextLine().trim().substring(0, 3);
+            System.out.print("Input   arrival airport code in 3 characters: ");
+            final String arrivalAirport = scan.nextLine().trim().substring(0, 3);
+            System.out.print("Input departure date in           yyyy-mm-dd: ");
+            final String departDate = scan.nextLine().trim().substring(0, 10);
+            System.out.print("Input return date in yyyy-mm-dd (blank for one-way trip): ");
+            String returnDate = scan.nextLine().trim();
+            return new String[]{departureAirport, arrivalAirport, departDate, returnDate};
+        });
 
         //init
+        final long START_TIME = System.currentTimeMillis();
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
         Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
         System.setProperty("webdriver.chrome.driver", "D:/Download/chromedriver.exe");
@@ -43,6 +47,16 @@ public class FlightPriceCollection {
 //        webClient.getOptions().setThrowExceptionOnScriptError(false);
 
         //process
+        System.out.println("\n\t====== Processing, please wait... ======\n");
+        String departureAirport = "", arrivalAirport = "", departDate = "", returnDate = "";
+        try {
+            departureAirport = completableFuture.get()[0];
+            arrivalAirport = completableFuture.get()[1];
+            departDate = completableFuture.get()[3];
+            returnDate = completableFuture.get()[4];
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (returnDate.equals(""))
             driver.get(
 //            try {
@@ -61,18 +75,17 @@ public class FlightPriceCollection {
 //        ((JavascriptExecutor) webClient).executeScript("window.scrollTo(0, document.body.scrollHeight)");
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 //        webClient.waitForBackgroundJavaScript(10 * 1000);
+        System.out.println("\nBoot time: " + (System.currentTimeMillis() - START_TIME) / 1000d);
 
         //output
-        System.out.println("\n\t====== Showing at most 70 flights sorted by price ======\n");
+        System.out.println("\t====== Showing at most 100 flights sorted by price ======\n");
         System.out.println(driver.getTitle() + "\n");
 //        System.out.println(Objects.requireNonNull(htmlPage).getTitleText() + "\n");
         ArrayList<Flight> flights = new ArrayList<>();
         String prefix, suffix4Price = " > div.inb.price.child_price.lowest_price",
                 airlineFlightNumber, model, startTime, endTime, departureAp, arrivalAp, accuracy, discountRate, price;
         int divStart = 1;
-//        long current;
-        for (int i = 1; i <= 70; i++) {
-//            current = System.currentTimeMillis();
+        for (int i = 1; i <= 100; i++) {
             prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child("
                     + divStart + ") > div:nth-child(1) > div:nth-child(" + i + ") > div";
             if (i == 1) {
@@ -117,6 +130,7 @@ public class FlightPriceCollection {
 //            System.out.println("\tfinal " + i + " = " + (System.currentTimeMillis() - current) / 1000d);
             System.out.println(flight);
         }
+        System.out.println("\nTotal exec time: " + (System.currentTimeMillis() - START_TIME) / 1000d);
     }
     //    driver.findElement(By.linkText("查看365天低价")).click();
 
