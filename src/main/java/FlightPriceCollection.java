@@ -1,10 +1,8 @@
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -33,7 +31,7 @@ public class FlightPriceCollection {
         ChromeOptions options = new ChromeOptions();
         options.setBinary("C:/Program Files (x86)/Google/Chrome Dev/Application/chrome.exe");
         options.addArguments("--headless");
-        ChromeDriver driver = new ChromeDriver(options);
+        final ChromeDriver driver = new ChromeDriver(options);
 //        HtmlUnitDriver driver = new HtmlUnitDriver(true);
 
         //process
@@ -49,40 +47,46 @@ public class FlightPriceCollection {
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
         //output
-        System.out.println("\n\t====== Showing at most 15 flights sorted by price ======\n");
+        System.out.println("\n\t====== Showing at most 20 flights sorted by price ======\n");
         System.out.println(driver.getTitle() + "\n");
         ArrayList<Flight> flights = new ArrayList<>();
         String prefix, airlineFlightNumber, model, startTime, endTime, departureAp, arrivalAp, accuracy, discountRate, price;
-        for (int i = 1; i <= 15; i++) {
+        long current;//todo
+        for (int i = 1; i <= 20; i++) {
+            current = System.currentTimeMillis();//todo
             prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(" + i + ") > div";
-            if (driver.findElementsByCssSelector(prefix).size() == 0)
+            if (driver.findElementsByCssSelector(prefix.substring(0, prefix.length() - 6)).size() == 0)
                 prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(" + i + ") > div";
             try {
                 airlineFlightNumber = driver.findElementByCssSelector(prefix + " > div.inb.logo > div.logo-item.flight_logo > div > span").getText();
-                model = driver.findElementByCssSelector(prefix + " > div.inb.logo > div:nth-child(2)").getText();
-                startTime = driver.findElementByCssSelector(prefix + " > div.inb.right > div.time_box > strong").getText();
-                endTime = driver.findElementByCssSelector(prefix + " > div.inb.left > div.time_box > strong").getText();
-                departureAp = driver.findElementByCssSelector(prefix + " > div.inb.right > div.airport").getText();
-                arrivalAp = driver.findElementByCssSelector(prefix + " > div.inb.left > div.airport").getText();
-                accuracy = driver.findElementByCssSelector(prefix + " > div.inb.service > div > div > div").getText();
-                if (accuracy.equals("-"))
-                    accuracy = "N/A";
-                List<WebElement> list = driver.findElementsByCssSelector(prefix + " > div.inb.price.child_price.lowest_price > div > div > span");
-                if (list.size() != 0) {
-                    discountRate = list.get(0).getText();
-                    price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price.lowest_price > div > span").getText();
-                } else {
-                    discountRate = driver.findElementByCssSelector(prefix + " > div.inb.price.child_price > div > div > span").getText();
-                    price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price > div > span").getText();
-                }
-                Flight flight = new Flight(airlineFlightNumber, model, startTime, endTime,
-                        departureAp, arrivalAp, accuracy, discountRate, price, "Ctrip");
-                flights.add(flight);
-                System.out.println(flight);
             } catch (NoSuchElementException e) {
                 System.out.println("Got " + (i - 1) + " flight(s) in total.");
                 break;
             }
+            model = driver.findElementByCssSelector(prefix + " > div.inb.logo > div:nth-child(2)").getText();
+            startTime = driver.findElementByCssSelector(prefix + " > div.inb.right > div.time_box > strong").getText();
+            endTime = driver.findElementByCssSelector(prefix + " > div.inb.left > div.time_box > strong").getText();
+            departureAp = driver.findElementByCssSelector(prefix + " > div.inb.right > div.airport").getText();
+            arrivalAp = driver.findElementByCssSelector(prefix + " > div.inb.left > div.airport").getText();
+            accuracy = driver.findElementByCssSelector(prefix + " > div.inb.service > div > div > div").getText();
+            if (accuracy.equals("-"))
+                accuracy = "N/A";
+            System.out.println("\texec " + i + " =1= " + (System.currentTimeMillis() - current) / 1000d);
+            try {
+                discountRate = driver.findElementByCssSelector(prefix + " > div.inb.price.child_price.lowest_price > div > div > span").getText();
+                price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price.lowest_price > div > span").getText();
+                System.out.println("\texec " + i + " =1.1= " + (System.currentTimeMillis() - current) / 1000d);
+            } catch (NoSuchElementException e) {
+                discountRate = driver.findElementByCssSelector(prefix + " > div.inb.price.child_price > div > div > span").getText();
+                price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price > div > span").getText();
+                System.out.println("\texec " + i + " =1.2= " + (System.currentTimeMillis() - current) / 1000d);
+            }
+            System.out.println("\texec " + i + " =2= " + (System.currentTimeMillis() - current) / 1000d);
+            Flight flight = new Flight(airlineFlightNumber, model, startTime, endTime,
+                    departureAp, arrivalAp, accuracy, discountRate, price, "Ctrip");
+            flights.add(flight);
+            System.out.println("\texec " + i + " =0= " + (System.currentTimeMillis() - current) / 1000d);//todo
+            System.out.println(flight);
         }
     }
 }
