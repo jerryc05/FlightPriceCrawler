@@ -1,75 +1,36 @@
-class Flight {
-    private String airline, flightNumber, model, startTime, endTime, departureAirport, arrivalAirport, accuracy, discountRate;
+import javax.annotation.Nonnull;
 
-    public String getAirline() {
-        return airline;
-    }
+class Flight implements Comparable<Flight> {
+    private final String airlineFlightNumber, model, startTime, endTime, departureAirport, arrivalAirport, accuracy, discountRate, price, proxy;
 
-    public void setAirline(String airline) {
-        this.airline = airline;
-    }
-
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
+    Flight(String airlineFlightNumber, String model, String startTime, String endTime, String departureAirport,
+           String arrivalAirport, String accuracy, String discountRate, String price, String proxy) {
+        this.airlineFlightNumber = airlineFlightNumber;
         this.model = model;
-    }
-
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(String startTime) {
         this.startTime = startTime;
-    }
-
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
         this.endTime = endTime;
-    }
-
-    public String getDepartureAirport() {
-        return departureAirport;
-    }
-
-    public void setDepartureAirport(String departureAirport) {
         this.departureAirport = departureAirport;
-    }
-
-    public String getArrivalAirport() {
-        return arrivalAirport;
-    }
-
-    public void setArrivalAirport(String arrivalAirport) {
         this.arrivalAirport = arrivalAirport;
-    }
-
-    public String getAccuracy() {
-        return accuracy;
-    }
-
-    public void setAccuracy(String accuracy) {
         this.accuracy = accuracy;
-    }
-
-    public String getDiscountRate() {
-        return discountRate;
-    }
-
-    public void setDiscountRate(String discountRate) {
         this.discountRate = discountRate;
+        this.price = price;
+        this.proxy = proxy;
+    }
+
+    @Override
+    public String toString() {
+        String space;
+        if (airlineFlightNumber.contains("共享"))
+            space = "\t";
+        else
+            space = "\t\t";
+        return airlineFlightNumber + space + startTime + "->" + endTime
+                + "\t" + departureAirport + " -> " + arrivalAirport + "\t\tAccu: " + accuracy + "\t"
+                + price + "\t" + discountRate + "\t(" + proxy + ")\t" + model;
+    }
+
+    @Override
+    public int compareTo(@Nonnull Flight o) {
+        return Integer.parseInt(price.substring(1)) - Integer.parseInt(o.price.substring(1));
     }
 }

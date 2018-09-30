@@ -1,10 +1,10 @@
-import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -17,14 +17,14 @@ public class FlightPriceCollection {
 
         //input
         System.out.print("Input departure airport code in 3 characters: ");
-        final String departureAirport = scan.nextLine().trim().substring(0,3);
+        final String departureAirport = scan.nextLine().trim().substring(0, 3);
         System.out.print("Input   arrival airport code in 3 characters: ");
-        final String arrivalAirport = scan.nextLine().trim().substring(0,3);
+        final String arrivalAirport = scan.nextLine().trim().substring(0, 3);
         System.out.print("Input departure date in           yyyy-mm-dd: ");
-        final String departDate =scan.nextLine().trim().substring(0,10);
+        final String departDate = scan.nextLine().trim().substring(0, 10);
         System.out.print("Input return date in yyyy-mm-dd (blank for one-way trip): ");
         String returnDate = scan.nextLine().trim();
-        System.out.println("====== Processing, please wait... ======");
+        System.out.println("\n\t====== Processing, please wait... ======\n");
 
         //init
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
@@ -35,6 +35,8 @@ public class FlightPriceCollection {
         options.addArguments("--headless");
         ChromeDriver driver = new ChromeDriver(options);
 //        HtmlUnitDriver driver = new HtmlUnitDriver(true);
+
+        //process
         if (returnDate.equals(""))
             driver.get("https://flights.ctrip.com/itinerary/oneway/"
                     + departureAirport + "-" + arrivalAirport + "?date=" + departDate);
@@ -43,39 +45,40 @@ public class FlightPriceCollection {
             driver.get("https://flights.ctrip.com/itinerary/roundtrip/"
                     + departureAirport + "-" + arrivalAirport + "?date=" + departDate + "%2" + returnDate);//,
         }
-        System.out.println("Title: " + driver.getTitle());
 
-        //process
-        WebDriverWait wait = new WebDriverWait(driver, 10);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-//        System.out.println("start");
-//        try {
-//            Thread.sleep(20000);
-//        } catch (InterruptedException e) {
-//            e.getMessage();
-//        }
-//        System.out.println("end");
-//        int indexCount = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
-//                By.cssSelector("#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div"))).size();
-//        System.out.println(driver.findElementsByCssSelector("#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div"));
-//        System.out.println(indexCount);
-//        String[] selectorArray = new String[indexCount];
-//        for (int i = 1; i <= indexCount; i++) {
-//            selectorArray[i - 1] =
-//                    "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(" + i
-//                            + ") > div > div.inb.price.child_price > div > span";
-//            System.out.println(selectorArray[i - 1]);
-//        }
-//        for (String selector : selectorArray) {
-//            System.out.println(wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector))).getText());
-//    }
-        for (int i = 1; i <= 10; i++) {
+
+        //output
+        System.out.println("\n\t====== Showing at most 15 flights sorted by price ======\n");
+        System.out.println(driver.getTitle() + "\n");
+        ArrayList<Flight> flights = new ArrayList<>();
+        String prefix, airlineFlightNumber, model, startTime, endTime, departureAp, arrivalAp, accuracy, discountRate, price;
+        for (int i = 1; i <= 15; i++) {
+            prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(" + i + ") > div";
+            if (driver.findElementsByCssSelector(prefix).size() == 0)
+                prefix = "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(" + i + ") > div";
             try {
-                System.out.println(wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(
-                        "#base_bd > div.base_main > div.searchresult_content > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(" + i
-                                + ") > div > div.inb.price.child_price > div > span"))).getText());
+                airlineFlightNumber = driver.findElementByCssSelector(prefix + " > div.inb.logo > div.logo-item.flight_logo > div > span").getText();
+                model = driver.findElementByCssSelector(prefix + " > div.inb.logo > div:nth-child(2)").getText();
+                startTime = driver.findElementByCssSelector(prefix + " > div.inb.right > div.time_box > strong").getText();
+                endTime = driver.findElementByCssSelector(prefix + " > div.inb.left > div.time_box > strong").getText();
+                departureAp = driver.findElementByCssSelector(prefix + " > div.inb.right > div.airport").getText();
+                arrivalAp = driver.findElementByCssSelector(prefix + " > div.inb.left > div.airport").getText();
+                accuracy = driver.findElementByCssSelector(prefix + " > div.inb.service > div > div > div").getText();
+                List<WebElement> list = driver.findElementsByCssSelector(prefix + " > div.inb.price.child_price.lowest_price > div > div > span");
+                if (list.size() != 0) {
+                    discountRate = list.get(0).getText();
+                    price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price.lowest_price > div > span").getText();
+                } else {
+                    discountRate = driver.findElementByCssSelector(prefix + " > div.inb.price.child_price > div > div > span").getText();
+                    price = driver.findElementByCssSelector(prefix + "> div.inb.price.child_price > div > span").getText();
+                }
+                Flight flight = new Flight(airlineFlightNumber, model, startTime, endTime,
+                        departureAp, arrivalAp, accuracy, discountRate, price,"Ctrip");
+                flights.add(flight);
+                System.out.println(flight);
             } catch (NoSuchElementException e) {
-                e.printStackTrace();
+                System.out.println("Got " + (i - 1) + " flight(s) in total.");
                 break;
             }
         }
