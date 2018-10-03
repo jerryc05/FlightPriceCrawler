@@ -1,7 +1,3 @@
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
 class CrawlCtripBySelenium {
 
     static void crawlCtripBySelenium() {/*
@@ -139,7 +135,7 @@ class CrawlCtripBySelenium {
         }
         System.out.println("\nTotal exec time: " + (System.currentTimeMillis() - START_TIME) / 1000d);
         driver.quit();
-        });*/
+        });
     }
     //    driver.findElement(By.linkText("查看365天低价")).click();
 
@@ -149,6 +145,6 @@ class CrawlCtripBySelenium {
             return false;
         } catch (NoSuchElementException e) {
             return true;
-        }
+        }*/
     }
 }

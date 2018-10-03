@@ -1,5 +1,3 @@
-import javax.annotation.Nonnull;
-
 class Flight implements Comparable<Flight> {
     private final String airlineFlightNumber, model, startTime, endTime, departureAirport, arrivalAirport, accuracy, discountRate, price, proxy;
 
@@ -28,7 +26,7 @@ class Flight implements Comparable<Flight> {
     }
 
     @Override
-    public int compareTo(@Nonnull Flight o) {
-        return Integer.parseInt(price.substring(1)) - Integer.parseInt(o.price.substring(1));
+    public int compareTo(Flight flight) {
+        return Integer.parseInt(price.substring(1)) - Integer.parseInt(flight.price.substring(1));
     }
 }

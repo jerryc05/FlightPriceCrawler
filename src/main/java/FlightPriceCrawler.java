@@ -19,7 +19,7 @@ public class FlightPriceCrawler {
                 "return date(YYYY-MM-DD)", returnDateField
         };
         if (JOptionPane.showConfirmDialog(
-                null, popupWindow, "Flight Search", JOptionPane.OK_CANCEL_OPTION)
+                null, popupWindow, "Flight Search", JOptionPane.DEFAULT_OPTION)
                 == JOptionPane.OK_OPTION) {
             if (departureAirportField.getText().equals(""))
                 departureAirportField.setText("foc");
