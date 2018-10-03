@@ -14,8 +14,6 @@ import java.util.zip.DeflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 
 class CrawlCtripByJson {
 
@@ -39,10 +37,10 @@ class CrawlCtripByJson {
             else
                 url = new URL("https://flights.ctrip.com/itinerary/roundtrip/"
                         + departureAirportCode + "-" + arrivalAirportCode + "?date=" + departDate + "%2" + returnDate);
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            TrustManager[] trustManagers = {new MyX509TrustManager()};
-            sslContext.init(null, trustManagers, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+//            SSLContext sslContext = SSLContext.getInstance("SSL");
+//            TrustManager[] trustManagers = {new MyX509TrustManager()};
+//            sslContext.init(null, trustManagers, new java.security.SecureRandom());
+//            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
 
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
             httpsURLConnection.setRequestMethod("GET");
@@ -51,15 +49,15 @@ class CrawlCtripByJson {
             httpsURLConnection.setReadTimeout(10 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
-            httpsURLConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
-            httpsURLConnection.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7");
-            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            httpsURLConnection.setRequestProperty("DNT", "1");
-            httpsURLConnection.setRequestProperty("Upgrade-Insecure-Requests", "1");
-            httpsURLConnection.setRequestProperty("Connection", "keep-alive");
-            httpsURLConnection.setRequestProperty("Host", "flights.ctrip.com");
-            httpsURLConnection.setHostnameVerifier((hostname, session) -> true);
+            httpsURLConnection.setRequestProperty("Accept", "text/html");//,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");//, deflate, br
+//            httpsURLConnection.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7");
+//            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+//            httpsURLConnection.setRequestProperty("DNT", "1");
+//            httpsURLConnection.setRequestProperty("Upgrade-Insecure-Requests", "1");
+//            httpsURLConnection.setRequestProperty("Connection", "keep-alive");
+//            httpsURLConnection.setRequestProperty("Host", "flights.ctrip.com");
+//            httpsURLConnection.setHostnameVerifier((hostname, session) -> true);
             if (cookieMap != null) {
                 StringBuilder parseCookie = new StringBuilder();
                 for (String keyOfACookie : cookieMap.keySet())
