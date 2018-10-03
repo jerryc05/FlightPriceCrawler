@@ -5,6 +5,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 class CrawlCtripBySelenium {
 
     static void crawlCtripBySelenium() {/*
+
+        CompletableFuture<String[]> completableFuture = CompletableFuture.supplyAsync(() -> {
         //init
         final long START_TIME = System.currentTimeMillis();
 //        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
@@ -136,7 +138,8 @@ class CrawlCtripBySelenium {
             e.printStackTrace();
         }
         System.out.println("\nTotal exec time: " + (System.currentTimeMillis() - START_TIME) / 1000d);
-        driver.quit();*/
+        driver.quit();
+        });*/
     }
     //    driver.findElement(By.linkText("查看365天低价")).click();
 
