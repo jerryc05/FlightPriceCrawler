@@ -1,3 +1,5 @@
+package com.jerryc05;
+
 class Flight implements Comparable<Flight> {
     private final String airlineFlightNumber, model, startTime, endTime, departureAirport, arrivalAirport, accuracy, discountRate, price, proxy;
 

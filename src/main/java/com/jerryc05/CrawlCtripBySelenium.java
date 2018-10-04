@@ -1,3 +1,5 @@
+package com.jerryc05;
+
 class CrawlCtripBySelenium {
 
     static void crawlCtripBySelenium() {/*
@@ -56,7 +58,7 @@ class CrawlCtripBySelenium {
         System.out.println("\t====== Showing at most 100 flights sorted by price ======\n");
         System.out.println(driver.getTitle() + "\n");
         //        System.out.println(Objects.requireNonNull(htmlPage).getTitleText() + "\n");
-        ArrayList<Flight> flights = new ArrayList<>();
+        ArrayList<com.jerryc05.Flight> flights = new ArrayList<>();
         String prefix, suffix4Price = " > div.inb.price.child_price.lowest_price",
                 airlineFlightNumber, model, startTime, endTime, departureAirport, arrivalAirport, accuracy, discountRate, price;
         int divStart = 1;
@@ -105,7 +107,7 @@ class CrawlCtripBySelenium {
                 discountRate = driver.findElementByCssSelector(prefix + suffix4Price + " > div > div > span").getText();
                 price = driver.findElementByCssSelector(prefix + suffix4Price + " >  div > span").getText();
             }
-            Flight flight = new Flight(airlineFlightNumber, model, startTime, endTime,
+            com.jerryc05.Flight flight = new com.jerryc05.Flight(airlineFlightNumber, model, startTime, endTime,
                     departureAirport, arrivalAirport, accuracy, discountRate, price, "Ctrip");
             flights.add(flight);
 //            System.out.println("\tfinal " + i + " = " + (System.currentTimeMillis() - current) / 1000d);
