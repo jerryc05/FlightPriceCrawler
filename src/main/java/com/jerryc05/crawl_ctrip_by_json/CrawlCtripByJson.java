@@ -92,23 +92,13 @@ public class CrawlCtripByJson {
             logger.warning(stringWriter.toString());
             return false;
         } finally {
-            try {
-                if (httpsURLConnection != null)
-                    httpsURLConnection.disconnect();
-            } catch (Exception e) {
-                StringWriter stringWriter = new StringWriter();
-                e.printStackTrace(new PrintWriter(stringWriter));
-                logger.warning(stringWriter.toString());
-            }
+            closeConnection(httpsURLConnection);
         }
         return true;
     }
 
     private static boolean getProductJson() {
 
-        ByteArrayOutputStream byteArrayOutputStream = null;
-        BufferedInputStream bufferedInputStream = null;
-        String result = null;
         HttpsURLConnection httpsURLConnection = null;
         URL url;
 
@@ -137,9 +127,7 @@ public class CrawlCtripByJson {
                 jsonPOST.flightWay = "";
             }
             final String json = JSON.toJSONString(jsonPOST, SerializerFeature.NotWriteDefaultValue);
-            final String SAMPLE_JSON = "{\"flightWay\":\"Oneway\",\"classType\":\"ALL\",\"hasChild\":false,\"hasBaby\":false,\"searchIndex\":1,\"airportParams\":[{\"dcity\":\"FOC\",\"acity\":\"BJS\",\"dcityname\":\"福州\",\"acityname\":\"北京\",\"date\":\"2018-12-21\",\"dcityid\":258,\"acityid\":1,\"aport\":\"PEK\",\"aportname\":\"首都国际机场\"}]}";
             logger.info(json);
-            logger.info("");
 
             httpsURLConnection.setRequestProperty("Content-Length", Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
@@ -147,7 +135,7 @@ public class CrawlCtripByJson {
             outputStream.close();
             httpsURLConnection.connect();
 
-            result = processJson(httpsURLConnection);
+            final String result = processJson(httpsURLConnection);
             logger.info(result);
         } catch (Exception e) {
             StringWriter stringWriter = new StringWriter();
@@ -155,18 +143,7 @@ public class CrawlCtripByJson {
             logger.warning(stringWriter.toString());
             return false;
         } finally {
-            try {
-                if (byteArrayOutputStream != null)
-                    byteArrayOutputStream.close();
-                if (bufferedInputStream != null)
-                    bufferedInputStream.close();
-                if (httpsURLConnection != null)
-                    httpsURLConnection.disconnect();
-            } catch (Exception e) {
-                StringWriter stringWriter = new StringWriter();
-                e.printStackTrace(new PrintWriter(stringWriter));
-                logger.warning(stringWriter.toString());
-            }
+            closeConnection(httpsURLConnection);
         }
         return true;
     }
@@ -201,42 +178,73 @@ public class CrawlCtripByJson {
         }
     }
 
-    private static String processJson(HttpsURLConnection httpsURLConnection) {
+    private static String processJson(final HttpsURLConnection httpsURLConnection) {
 
-        if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
-            throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
-        if (httpsURLConnection.getContentLength() <= 0)
-            throw new Exception("Content Length = " + httpsURLConnection.getContentLength());
-        InputStream inputStream;
-        final String contentEncoding = httpsURLConnection.getContentEncoding();
-        if (contentEncoding == null)
-            inputStream = httpsURLConnection.getInputStream();
-        else
-            switch (contentEncoding) {
-                case "gzip":
-                    inputStream = new GZIPInputStream(httpsURLConnection.getInputStream());
-                    break;
-                case "deflate":
-                    inputStream = new DeflaterInputStream(httpsURLConnection.getInputStream());
-                    break;
-                case "br":
-                    inputStream = new BrotliCompressorInputStream(httpsURLConnection.getInputStream());
-                    break;
-                default:
-                    inputStream = httpsURLConnection.getInputStream();
+        BufferedInputStream bufferedInputStream = null;
+        ByteArrayOutputStream byteArrayOutputStream = null;
+        try {
+            if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
+                throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
+            if (httpsURLConnection.getContentLength() <= 0)
+                throw new Exception("Content Length = " + httpsURLConnection.getContentLength());
+            InputStream inputStream;
+            final String contentEncoding = httpsURLConnection.getContentEncoding();
+            if (contentEncoding == null)
+                inputStream = httpsURLConnection.getInputStream();
+            else
+                switch (contentEncoding) {
+                    case "gzip":
+                        inputStream = new GZIPInputStream(httpsURLConnection.getInputStream());
+                        break;
+                    case "deflate":
+                        inputStream = new DeflaterInputStream(httpsURLConnection.getInputStream());
+                        break;
+                    case "br":
+                        inputStream = new BrotliCompressorInputStream(httpsURLConnection.getInputStream());
+                        break;
+                    default:
+                        inputStream = httpsURLConnection.getInputStream();
+                }
+            bufferedInputStream = new BufferedInputStream(inputStream);
+            byteArrayOutputStream = new ByteArrayOutputStream();
+            byte[] bytes = new byte[httpsURLConnection.getContentLength()];
+            int length;
+            while ((length = bufferedInputStream.read(bytes)) > 0) {
+                byteArrayOutputStream.write(bytes, 0, length);
             }
-        bufferedInputStream = new BufferedInputStream(inputStream);
-        byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] bytes = new byte[httpsURLConnection.getContentLength()];
-        int length;
-        while ((length = bufferedInputStream.read(bytes)) > 0) {
-            byteArrayOutputStream.write(bytes, 0, length);
+            String[] contentTypes = httpsURLConnection.getContentType().split(";");
+            for (String encoding : contentTypes)
+                if (encoding.contains("charset=")) {
+                    encoding = encoding.trim();
+                    return byteArrayOutputStream.toString(encoding.substring(8));
+                }
+        } catch (Exception e) {
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            logger.warning(stringWriter.toString());
+        } finally {
+            try {
+                if (byteArrayOutputStream != null)
+                    byteArrayOutputStream.close();
+                if (bufferedInputStream != null)
+                    bufferedInputStream.close();
+            } catch (Exception e) {
+                StringWriter stringWriter = new StringWriter();
+                e.printStackTrace(new PrintWriter(stringWriter));
+                logger.warning(stringWriter.toString());
+            }
         }
-        String[] contentTypes = httpsURLConnection.getContentType().split(";");
-        for (String encoding : contentTypes)
-            if (encoding.contains("charset=")) {
-                encoding = encoding.trim();
-                result = byteArrayOutputStream.toString(encoding.substring(8));
-            }
+        return null;
+    }
+
+    private static void closeConnection(final HttpsURLConnection httpsURLConnection) {
+        try {
+            if (httpsURLConnection != null)
+                httpsURLConnection.disconnect();
+        } catch (Exception e) {
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            logger.warning(stringWriter.toString());
+        }
     }
 }
