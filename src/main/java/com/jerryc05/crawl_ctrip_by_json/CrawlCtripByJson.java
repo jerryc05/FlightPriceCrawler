@@ -2,7 +2,8 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.jerryc05.crawl_ctrip_by_json.JsonPOST.AirportParamsItem;
+import com.jerryc05.MyUtils;
+import com.jerryc05.crawl_ctrip_by_json.ProductsJsonPost.AirportParamsItem;
 
 import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
 
@@ -87,9 +88,7 @@ public class CrawlCtripByJson {
                 throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
             saveCookies(httpsURLConnection.getHeaderFields());
         } catch (Exception e) {
-            StringWriter stringWriter = new StringWriter();
-            e.printStackTrace(new PrintWriter(stringWriter));
-            logger.warning(stringWriter.toString());
+            MyUtils.handleException(e, logger);
             return false;
         } finally {
             closeConnection(httpsURLConnection);
@@ -117,16 +116,16 @@ public class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty("Content-Type", "application/json");
             addCookiesToConnection(httpsURLConnection);
 
-            JsonPOST jsonPOST = JsonPOST.getInstance();
-            jsonPOST.airportParams = new AirportParamsItem[1];
-            jsonPOST.airportParams[0] = jsonPOST.new AirportParamsItem();
-            jsonPOST.airportParams[0].dcity = departureAirportCode;
-            jsonPOST.airportParams[0].acity = arrivalAirportCode;
-            jsonPOST.airportParams[0].date = departDate;
+            ProductsJsonPost productsJsonPost = new ProductsJsonPost();
+            productsJsonPost.airportParams = new AirportParamsItem[1];
+            productsJsonPost.airportParams[0] = productsJsonPost.new AirportParamsItem();
+            productsJsonPost.airportParams[0].dcity = departureAirportCode;
+            productsJsonPost.airportParams[0].acity = arrivalAirportCode;
+            productsJsonPost.airportParams[0].date = departDate;
             if (!returnDate.equals("")) {//todo d
-                jsonPOST.flightWay = "";
+                productsJsonPost.flightWay = "";
             }
-            final String json = JSON.toJSONString(jsonPOST, SerializerFeature.NotWriteDefaultValue);
+            final String json = JSON.toJSONString(productsJsonPost, SerializerFeature.NotWriteDefaultValue);
             logger.info(json);
 
             httpsURLConnection.setRequestProperty("Content-Length", Integer.toString(json.length()));

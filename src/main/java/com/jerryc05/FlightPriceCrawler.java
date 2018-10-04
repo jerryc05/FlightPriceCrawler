@@ -2,8 +2,6 @@ package com.jerryc05;
 
 import com.jerryc05.crawl_ctrip_by_json.CrawlCtripByJson;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
@@ -34,12 +32,12 @@ public class FlightPriceCrawler {
         final JTextField departDateField = new JTextField();
         final JTextField returnDateField = new JTextField();
         Object[] popupWindow = {
-                "departure airport code:", departureAirportField,
-                "arrival airport code:", arrivalAirportField,
-                "departure date(YYYY-MM-DD)", departDateField,
-                "return date(YYYY-MM-DD)", returnDateField};
+                "Departure airport IATA code:", departureAirportField,
+                "Arrival airport IATA code:", arrivalAirportField,
+                "Departure date(YYYY-MM-DD):", departDateField,
+                "Return date(YYYY-MM-DD) or blank:", returnDateField};
         if (JOptionPane.showConfirmDialog(
-                null, popupWindow, "com.jerryc05.Flight Search", JOptionPane.DEFAULT_OPTION)
+                null, popupWindow, "Flight Search", JOptionPane.DEFAULT_OPTION)
                 == JOptionPane.OK_OPTION) {
             if (departureAirportField.getText().trim().equals(""))
                 departureAirportCode = "foc";
@@ -58,9 +56,7 @@ public class FlightPriceCrawler {
         try {
             return cfCtrip.get();
         } catch (Exception e) {
-            StringWriter stringWriter = new StringWriter();
-            e.printStackTrace(new PrintWriter(stringWriter));
-            logger.warning(stringWriter.toString());
+            MyUtils.handleException(e, logger);
             return false;
         }
     }

@@ -2,22 +2,11 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-@SuppressWarnings("unused")
-class JsonPOST {
+@SuppressWarnings({"unused", "WeakerAccess"})
+class ProductsJsonPost {
 
-    private static JsonPOST instance;
     @JSONField(name = "airportParams")
     AirportParamsItem[] airportParams;
-
-    private JsonPOST() {
-    }
-
-    static JsonPOST getInstance() {
-        if (instance == null)
-            instance = new JsonPOST();
-        return instance;
-    }
-//    List<AirportParamsItem> airportParams;
 
     @JSONField(name = "hasBaby")
     boolean hasBaby = false;
