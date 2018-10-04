@@ -2,13 +2,22 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import java.util.List;
-
 @SuppressWarnings("unused")
 class JsonPOST {
 
+    private static JsonPOST instance;
     @JSONField(name = "airportParams")
-    List<AirportParamsItem> airportParams;
+    AirportParamsItem[] airportParams;
+
+    private JsonPOST() {
+    }
+
+    static JsonPOST getInstance() {
+        if (instance == null)
+            instance = new JsonPOST();
+        return instance;
+    }
+//    List<AirportParamsItem> airportParams;
 
     @JSONField(name = "hasBaby")
     boolean hasBaby = false;
@@ -25,8 +34,32 @@ class JsonPOST {
     @JSONField(name = "classType")
     String classType = "ALL";
 
+    public AirportParamsItem[] getAirportParams() {
+        return airportParams;
+    }
+
+    public boolean isHasBaby() {
+        return hasBaby;
+    }
+
+    public boolean isHasChild() {
+        return hasChild;
+    }
+
+    public int getSearchIndex() {
+        return searchIndex;
+    }
+
+    public String getFlightWay() {
+        return flightWay;
+    }
+
+    public String getClassType() {
+        return classType;
+    }
+
     @SuppressWarnings("unused")
-    static class AirportParamsItem {
+    class AirportParamsItem {
 
         @JSONField(name = "dcity")
         String dcity;
@@ -35,24 +68,60 @@ class JsonPOST {
         String date;
 
         @JSONField(name = "dcityname")
-        String dcityname = "";
+        String dcityname;
 
         @JSONField(name = "dcityid")
-        int dcityid = 258;
+        int dcityid;
 
         @JSONField(name = "acityname")
-        String acityname = "";
+        String acityname;
 
         @JSONField(name = "acity")
         String acity;
 
         @JSONField(name = "aport")
-        String aport = "";
+        String aport;
 
         @JSONField(name = "acityid")
-        int acityid = 1;
+        int acityid;
 
         @JSONField(name = "aportname")
-        String aportname = "";
+        String aportname;
+
+        public String getDcity() {
+            return dcity;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public String getDcityname() {
+            return dcityname;
+        }
+
+        public int getDcityid() {
+            return dcityid;
+        }
+
+        public String getAcityname() {
+            return acityname;
+        }
+
+        public String getAcity() {
+            return acity;
+        }
+
+        public String getAport() {
+            return aport;
+        }
+
+        public int getAcityid() {
+            return acityid;
+        }
+
+        public String getAportname() {
+            return aportname;
+        }
     }
 }

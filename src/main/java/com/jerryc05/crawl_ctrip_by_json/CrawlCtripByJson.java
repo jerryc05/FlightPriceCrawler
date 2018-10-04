@@ -1,6 +1,8 @@
 package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.jerryc05.crawl_ctrip_by_json.JsonPOST.AirportParamsItem;
 
 import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
 
@@ -8,6 +10,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -69,7 +73,6 @@ public class CrawlCtripByJson {
                         + departureAirportCode + "-" + arrivalAirportCode + "?date=" + departDate + "%2" + returnDate);
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
             httpsURLConnection.setRequestMethod("GET");
-            httpsURLConnection.setInstanceFollowRedirects(true);
             httpsURLConnection.setConnectTimeout(10 * 1000);
             httpsURLConnection.setReadTimeout(10 * 1000);
             httpsURLConnection.setDoOutput(true);
@@ -80,17 +83,22 @@ public class CrawlCtripByJson {
             addCookiesToConnection(httpsURLConnection);
             httpsURLConnection.connect();
 
-            if (httpsURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK)
-                saveCookies(httpsURLConnection.getHeaderFields());
+            if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
+                throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
+            saveCookies(httpsURLConnection.getHeaderFields());
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            logger.warning(stringWriter.toString());
             return false;
         } finally {
             try {
                 if (httpsURLConnection != null)
                     httpsURLConnection.disconnect();
             } catch (Exception e) {
-                logger.warning(e.getMessage());
+                StringWriter stringWriter = new StringWriter();
+                e.printStackTrace(new PrintWriter(stringWriter));
+                logger.warning(stringWriter.toString());
             }
         }
         return true;
@@ -105,67 +113,46 @@ public class CrawlCtripByJson {
         URL url;
 
         try {
-
             url = new URL("https://flights.ctrip.com/itinerary/api/12808/products");
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
             httpsURLConnection.setRequestMethod("POST");
-            httpsURLConnection.setInstanceFollowRedirects(true);
             httpsURLConnection.setUseCaches(false);
-            httpsURLConnection.setConnectTimeout(10 * 1000);
-            httpsURLConnection.setReadTimeout(10 * 1000);
+            httpsURLConnection.setConnectTimeout(5 * 1000);
+            httpsURLConnection.setReadTimeout(5 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
             httpsURLConnection.setRequestProperty("Accept", "*/*");
             httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");//, deflate, br
             httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");// (compatible); MSIE 6.0; Windows NT 5.1;SV1
+            httpsURLConnection.setRequestProperty("Content-Type", "application/json");
             addCookiesToConnection(httpsURLConnection);
 
-//            JsonPOST jsonPOST=new JsonPOST()
-//            jsonPOST.airportParamsItem.dcity = departureAirportCode;
-//            jsonPOST.AirportParamsItem.acity = arrivalAirportCode;
-//            jsonPOST.AirportParamsItem.date = departDate;
-//            if (!returnDate.equals("")) {//tod d
-//                JsonPOST.flightWay = "";
-//            }
+            JsonPOST jsonPOST = JsonPOST.getInstance();
+            jsonPOST.airportParams = new AirportParamsItem[1];
+            jsonPOST.airportParams[0] = jsonPOST.new AirportParamsItem();
+            jsonPOST.airportParams[0].dcity = departureAirportCode;
+            jsonPOST.airportParams[0].acity = arrivalAirportCode;
+            jsonPOST.airportParams[0].date = departDate;
+            if (!returnDate.equals("")) {//todo d
+                jsonPOST.flightWay = "";
+            }
+            final String json = JSON.toJSONString(jsonPOST, SerializerFeature.NotWriteDefaultValue);
+            final String SAMPLE_JSON = "{\"flightWay\":\"Oneway\",\"classType\":\"ALL\",\"hasChild\":false,\"hasBaby\":false,\"searchIndex\":1,\"airportParams\":[{\"dcity\":\"FOC\",\"acity\":\"BJS\",\"dcityname\":\"福州\",\"acityname\":\"北京\",\"date\":\"2018-12-21\",\"dcityid\":258,\"acityid\":1,\"aport\":\"PEK\",\"aportname\":\"首都国际机场\"}]}";
+            logger.info(json);
+            logger.info("");
+
+            httpsURLConnection.setRequestProperty("Content-Length", Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
-            JSON.writeJSONString(outputStream, "");
+            outputStream.write(json.getBytes());
             outputStream.close();
             httpsURLConnection.connect();
 
-            if (httpsURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK
-                    && httpsURLConnection.getContentLength() > 0) {
-                InputStream inputStream;
-                switch (httpsURLConnection.getContentEncoding()) {
-                    case "gzip":
-                        inputStream = new GZIPInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    case "deflate":
-                        inputStream = new DeflaterInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    case "br":
-                        inputStream = new BrotliCompressorInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    default:
-                        inputStream = httpsURLConnection.getInputStream();
-                }
-                bufferedInputStream = new BufferedInputStream(inputStream);
-                byteArrayOutputStream = new ByteArrayOutputStream();
-                byte[] bytes = new byte[httpsURLConnection.getContentLength()];
-                int length;
-                while ((length = bufferedInputStream.read(bytes)) > 0) {
-                    byteArrayOutputStream.write(bytes, 0, length);
-                }
-                String[] contentTypes = httpsURLConnection.getContentType().split(";");
-                for (String encoding : contentTypes)
-                    if (encoding.contains("charset=")) {
-                        encoding = encoding.trim();
-                        result = byteArrayOutputStream.toString(encoding.substring(8));
-                    }
-                logger.info(result);
-            }
-        } catch (
-                Exception e) {
-            logger.warning(e.getMessage());
+            result = processJson(httpsURLConnection);
+            logger.info(result);
+        } catch (Exception e) {
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            logger.warning(stringWriter.toString());
             return false;
         } finally {
             try {
@@ -176,9 +163,9 @@ public class CrawlCtripByJson {
                 if (httpsURLConnection != null)
                     httpsURLConnection.disconnect();
             } catch (Exception e) {
-                logger.warning(e.getMessage());
-                ;
-
+                StringWriter stringWriter = new StringWriter();
+                e.printStackTrace(new PrintWriter(stringWriter));
+                logger.warning(stringWriter.toString());
             }
         }
         return true;
@@ -212,5 +199,44 @@ public class CrawlCtripByJson {
                 }
             }
         }
+    }
+
+    private static String processJson(HttpsURLConnection httpsURLConnection) {
+
+        if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
+            throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
+        if (httpsURLConnection.getContentLength() <= 0)
+            throw new Exception("Content Length = " + httpsURLConnection.getContentLength());
+        InputStream inputStream;
+        final String contentEncoding = httpsURLConnection.getContentEncoding();
+        if (contentEncoding == null)
+            inputStream = httpsURLConnection.getInputStream();
+        else
+            switch (contentEncoding) {
+                case "gzip":
+                    inputStream = new GZIPInputStream(httpsURLConnection.getInputStream());
+                    break;
+                case "deflate":
+                    inputStream = new DeflaterInputStream(httpsURLConnection.getInputStream());
+                    break;
+                case "br":
+                    inputStream = new BrotliCompressorInputStream(httpsURLConnection.getInputStream());
+                    break;
+                default:
+                    inputStream = httpsURLConnection.getInputStream();
+            }
+        bufferedInputStream = new BufferedInputStream(inputStream);
+        byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] bytes = new byte[httpsURLConnection.getContentLength()];
+        int length;
+        while ((length = bufferedInputStream.read(bytes)) > 0) {
+            byteArrayOutputStream.write(bytes, 0, length);
+        }
+        String[] contentTypes = httpsURLConnection.getContentType().split(";");
+        for (String encoding : contentTypes)
+            if (encoding.contains("charset=")) {
+                encoding = encoding.trim();
+                result = byteArrayOutputStream.toString(encoding.substring(8));
+            }
     }
 }

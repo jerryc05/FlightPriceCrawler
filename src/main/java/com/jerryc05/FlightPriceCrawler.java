@@ -2,6 +2,8 @@ package com.jerryc05;
 
 import com.jerryc05.crawl_ctrip_by_json.CrawlCtripByJson;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
@@ -56,7 +58,9 @@ public class FlightPriceCrawler {
         try {
             return cfCtrip.get();
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            logger.warning(stringWriter.toString());
             return false;
         }
     }
