@@ -6,13 +6,15 @@ import com.jerryc05.MyUtils;
 import com.jerryc05.crawl_ctrip_by_json.ProductsJsonPost.AirportParamsItem;
 
 import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -32,6 +34,7 @@ public class CrawlCtripByJson {
     private static String departDate;
     private static String returnDate;
     private static Logger logger;
+    private static final XSSFWorkbook workbook = new XSSFWorkbook();
 
     private CrawlCtripByJson() {
     }
@@ -49,12 +52,16 @@ public class CrawlCtripByJson {
         if (!initCookie())
             return false;
         else {
-            logger.info("initCookie() successful!");
-            if (!getProductJson())
+            logger.info(() -> "initCookie() successful!");
+            if (!getProductsJson())
                 return false;
             else {
-                logger.info("getProductJson() successful!");
-                //
+                logger.info(() -> "getProductsJson() successful!");
+                if (!getLowestPriceJson())
+                    return false;
+                else {
+                    logger.info(() -> "getLowestPriceJson() successful!");
+                }
             }
         }
         return true;
@@ -78,9 +85,9 @@ public class CrawlCtripByJson {
             httpsURLConnection.setReadTimeout(10 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
-            httpsURLConnection.setRequestProperty("Accept", "*/*");//text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
-            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");//, deflate, br
-            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");// (compatible); MSIE 6.0; Windows NT 5.1;SV1
+            httpsURLConnection.setRequestProperty("Accept", "*/*");
+            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
+            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
             addCookiesToConnection(httpsURLConnection);
             httpsURLConnection.connect();
 
@@ -96,7 +103,7 @@ public class CrawlCtripByJson {
         return true;
     }
 
-    private static boolean getProductJson() {
+    private static boolean getProductsJson() {
 
         HttpsURLConnection httpsURLConnection = null;
         URL url;
@@ -111,8 +118,8 @@ public class CrawlCtripByJson {
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
             httpsURLConnection.setRequestProperty("Accept", "*/*");
-            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");//, deflate, br
-            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");// (compatible); MSIE 6.0; Windows NT 5.1;SV1
+            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
+            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
             httpsURLConnection.setRequestProperty("Content-Type", "application/json");
             addCookiesToConnection(httpsURLConnection);
 
@@ -125,8 +132,9 @@ public class CrawlCtripByJson {
             if (!returnDate.equals("")) {//todo d
                 productsJsonPost.flightWay = "";
             }
-            final String json = JSON.toJSONString(productsJsonPost, SerializerFeature.NotWriteDefaultValue);
-            logger.info(json);
+            final String json = JSON.toJSONString(
+                    productsJsonPost, SerializerFeature.NotWriteDefaultValue);
+            logger.info(() -> json);
 
             httpsURLConnection.setRequestProperty("Content-Length", Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
@@ -135,14 +143,98 @@ public class CrawlCtripByJson {
             httpsURLConnection.connect();
 
             final String result = processJson(httpsURLConnection);
-            logger.info(result);
+            logger.info(() -> result);
         } catch (Exception e) {
-            StringWriter stringWriter = new StringWriter();
-            e.printStackTrace(new PrintWriter(stringWriter));
-            logger.warning(stringWriter.toString());
+            MyUtils.handleException(e, logger);
             return false;
         } finally {
             closeConnection(httpsURLConnection);
+        }
+
+        XSSFSheet sheet = workbook.createSheet(
+                departureAirportCode + "->" + arrivalAirportCode + "@" + departDate);
+        return true;
+    }
+
+    private static boolean getLowestPriceJson() {
+
+        HttpsURLConnection httpsURLConnection = null;
+        URL url;
+        LowestPriceJsonReturned lowestPriceJsonReturned;
+
+        try {
+            url = new URL("https://flights.ctrip.com/itinerary/api/12808/lowestPrice");
+            httpsURLConnection = (HttpsURLConnection) url.openConnection();
+            httpsURLConnection.setRequestMethod("POST");
+            httpsURLConnection.setUseCaches(false);
+            httpsURLConnection.setConnectTimeout(5 * 1000);
+            httpsURLConnection.setReadTimeout(5 * 1000);
+            httpsURLConnection.setDoOutput(true);
+            httpsURLConnection.setDoInput(true);
+            httpsURLConnection.setRequestProperty("Accept", "*/*");
+            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
+            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            httpsURLConnection.setRequestProperty("Content-Type", "application/json");
+            addCookiesToConnection(httpsURLConnection);
+
+            LowestPriceJsonPost lowestPriceJsonPost = new LowestPriceJsonPost();
+            lowestPriceJsonPost.dcity = departureAirportCode;
+            lowestPriceJsonPost.acity = arrivalAirportCode;
+            if (returnDate.equals(""))
+                lowestPriceJsonPost.flightWay = "Oneway";
+            else
+                lowestPriceJsonPost.flightWay = "Roundtrip";
+
+            final String json = JSON.toJSONString(
+                    lowestPriceJsonPost, SerializerFeature.NotWriteDefaultValue);
+            logger.info(() -> json);
+
+            httpsURLConnection.setRequestProperty("Content-Length", Integer.toString(json.length()));
+            OutputStream outputStream = httpsURLConnection.getOutputStream();
+            outputStream.write(json.getBytes());
+            outputStream.close();
+            httpsURLConnection.connect();
+
+            final String result = processJson(httpsURLConnection);
+            logger.info(() -> result);
+            lowestPriceJsonReturned = JSON.parseObject(result, LowestPriceJsonReturned.class);
+        } catch (Exception e) {
+            MyUtils.handleException(e, logger);
+            return false;
+        } finally {
+            closeConnection(httpsURLConnection);
+        }
+
+        XSSFSheet sheet = workbook.createSheet(
+                departureAirportCode + "->" + arrivalAirportCode + "@LOWEST");
+        if (lowestPriceJsonReturned == null)
+            return false;/*
+        if (returnDate.equals("")) {
+            int rowNumber = 0;
+            for (Map.Entry<String, Integer> entry : lowestPriceJsonReturned.data.oneWayPrice.get(0).entrySet()) {
+                XSSFRow row = sheet.createRow(rowNumber);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue());
+                rowNumber++;
+            }
+        } else {
+            int rowNumber = 0;
+            int colNumber;
+            for (Map.Entry<String, Map<String, Integer>> departureEntry : lowestPriceJsonReturned.data.getRoundTripPrice().entrySet()) {
+                XSSFRow row = sheet.createRow(rowNumber);
+                row.createCell(0).setCellValue(departureEntry.getKey());
+                colNumber = 1;
+                for (Map.Entry<String, Integer> arrivalEntry : departureEntry.getValue().entrySet()) {
+                    row.createCell(colNumber).setCellValue(arrivalEntry.getKey() + "=" + arrivalEntry.getValue());
+                    colNumber++;
+                }
+                rowNumber++;
+            }
+        }*/
+        try (FileOutputStream out = new FileOutputStream("D:/CtripFlightPrices.xlsx")) {
+            workbook.write(out);
+        } catch (IOException e) {
+            MyUtils.handleException(e, logger);
         }
         return true;
     }
@@ -218,9 +310,7 @@ public class CrawlCtripByJson {
                     return byteArrayOutputStream.toString(encoding.substring(8));
                 }
         } catch (Exception e) {
-            StringWriter stringWriter = new StringWriter();
-            e.printStackTrace(new PrintWriter(stringWriter));
-            logger.warning(stringWriter.toString());
+            MyUtils.handleException(e, logger);
         } finally {
             try {
                 if (byteArrayOutputStream != null)
@@ -228,9 +318,7 @@ public class CrawlCtripByJson {
                 if (bufferedInputStream != null)
                     bufferedInputStream.close();
             } catch (Exception e) {
-                StringWriter stringWriter = new StringWriter();
-                e.printStackTrace(new PrintWriter(stringWriter));
-                logger.warning(stringWriter.toString());
+                MyUtils.handleException(e, logger);
             }
         }
         return null;
@@ -241,9 +329,7 @@ public class CrawlCtripByJson {
             if (httpsURLConnection != null)
                 httpsURLConnection.disconnect();
         } catch (Exception e) {
-            StringWriter stringWriter = new StringWriter();
-            e.printStackTrace(new PrintWriter(stringWriter));
-            logger.warning(stringWriter.toString());
+            MyUtils.handleException(e, logger);
         }
     }
 }

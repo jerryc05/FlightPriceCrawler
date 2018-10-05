@@ -2,7 +2,7 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class ProductsJsonGet {
+public class ProductsJsonReturned {
 
     @JSONField(name = "msg")
     private String msg;

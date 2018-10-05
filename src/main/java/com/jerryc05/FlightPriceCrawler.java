@@ -22,7 +22,7 @@ public class FlightPriceCrawler {
 
         getInput();
         if (crawlCtripByJson())
-            logger.info(CrawlCtripByJson.class.getName() + " finished!");
+            logger.info(() -> CrawlCtripByJson.class.getName() + " finished!");
     }
 
     private static void getInput() {
