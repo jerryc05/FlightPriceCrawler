@@ -5,24 +5,17 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.jerryc05.MyUtils;
 import com.jerryc05.crawl_ctrip_by_json.ProductsJsonPost.AirportParamsItem;
 
-import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.zip.DeflaterInputStream;
-import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -61,6 +54,7 @@ public class CrawlCtripByJson {
                     return false;
                 else {
                     logger.info(() -> "getLowestPriceJson() successful!");
+                    openExcelFile();
                 }
             }
         }
@@ -88,17 +82,17 @@ public class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty("Accept", "*/*");
             httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
             httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
-            addCookiesToConnection(httpsURLConnection);
+            httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
             httpsURLConnection.connect();
 
             if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
                 throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
-            saveCookies(httpsURLConnection.getHeaderFields());
+            cookieMap = MyUtils.saveCookies(httpsURLConnection.getHeaderFields(), cookieMap);
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
             return false;
         } finally {
-            closeConnection(httpsURLConnection);
+            MyUtils.closeConnection(httpsURLConnection, logger);
         }
         return true;
     }
@@ -121,7 +115,7 @@ public class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
             httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
             httpsURLConnection.setRequestProperty("Content-Type", "application/json");
-            addCookiesToConnection(httpsURLConnection);
+            httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
             ProductsJsonPost productsJsonPost = new ProductsJsonPost();
             productsJsonPost.airportParams = new AirportParamsItem[1];
@@ -142,13 +136,13 @@ public class CrawlCtripByJson {
             outputStream.close();
             httpsURLConnection.connect();
 
-            final String result = processJson(httpsURLConnection);
+            final String result = MyUtils.processJson(httpsURLConnection, logger);
             logger.info(() -> result);
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
             return false;
         } finally {
-            closeConnection(httpsURLConnection);
+            MyUtils.closeConnection(httpsURLConnection, logger);
         }
 
         XSSFSheet sheet = workbook.createSheet(
@@ -175,7 +169,7 @@ public class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
             httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
             httpsURLConnection.setRequestProperty("Content-Type", "application/json");
-            addCookiesToConnection(httpsURLConnection);
+            httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
             LowestPriceJsonPost lowestPriceJsonPost = new LowestPriceJsonPost();
             lowestPriceJsonPost.dcity = departureAirportCode;
@@ -195,23 +189,24 @@ public class CrawlCtripByJson {
             outputStream.close();
             httpsURLConnection.connect();
 
-            final String result = processJson(httpsURLConnection);
+            final String result = MyUtils.processJson(httpsURLConnection, logger);
             logger.info(() -> result);
             lowestPriceJsonReturned = JSON.parseObject(result, LowestPriceJsonReturned.class);
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
             return false;
         } finally {
-            closeConnection(httpsURLConnection);
+            MyUtils.closeConnection(httpsURLConnection, logger);
         }
 
         XSSFSheet sheet = workbook.createSheet(
                 departureAirportCode + "->" + arrivalAirportCode + "@LOWEST");
         if (lowestPriceJsonReturned == null)
-            return false;/*
+            return false;
         if (returnDate.equals("")) {
             int rowNumber = 0;
-            for (Map.Entry<String, Integer> entry : lowestPriceJsonReturned.data.oneWayPrice.get(0).entrySet()) {
+            for (Map.Entry<String, Integer> entry :
+                    lowestPriceJsonReturned.getData().getOneWayPrice()[0].entrySet()) {
                 XSSFRow row = sheet.createRow(rowNumber);
                 row.createCell(0).setCellValue(entry.getKey());
                 row.createCell(1).setCellValue(entry.getValue());
@@ -220,7 +215,8 @@ public class CrawlCtripByJson {
         } else {
             int rowNumber = 0;
             int colNumber;
-            for (Map.Entry<String, Map<String, Integer>> departureEntry : lowestPriceJsonReturned.data.getRoundTripPrice().entrySet()) {
+            for (Map.Entry<String, Map<String, Integer>> departureEntry :
+                    lowestPriceJsonReturned.getData().getRoundTripPrice().entrySet()) {
                 XSSFRow row = sheet.createRow(rowNumber);
                 row.createCell(0).setCellValue(departureEntry.getKey());
                 colNumber = 1;
@@ -230,7 +226,7 @@ public class CrawlCtripByJson {
                 }
                 rowNumber++;
             }
-        }*/
+        }
         try (FileOutputStream out = new FileOutputStream("D:/CtripFlightPrices.xlsx")) {
             workbook.write(out);
         } catch (IOException e) {
@@ -239,95 +235,9 @@ public class CrawlCtripByJson {
         return true;
     }
 
-    private static void addCookiesToConnection(final HttpsURLConnection httpsURLConnection) {
-        if (cookieMap != null) {
-            StringBuilder parseCookie = new StringBuilder();
-            for (Map.Entry<String, String> cookieEntry : cookieMap.entrySet())
-                parseCookie.append(cookieEntry.getKey())
-                        .append("=")
-                        .append(cookieMap.get(cookieEntry.getValue()))
-                        .append(";");
-            httpsURLConnection.setRequestProperty("Cookie", parseCookie.toString());
-        }
-    }
-
-    private static void saveCookies(final Map<String, List<String>> map) {
-
-        for (Map.Entry<String, List<String>> headerEntry : map.entrySet()) {
-            if (!"Set-Cookie".equals(headerEntry.getKey())) break;
-            if (cookieMap == null)
-                cookieMap = new HashMap<>();
-            for (String cookiesString : headerEntry.getValue()) {
-                String[] cookiesInArray = cookiesString.split(";");
-                for (String cookie : cookiesInArray) {
-                    String keyOfACookie = cookie.split("=")[0];
-                    String valueOfACookie = cookie.split("=")[1];
-                    if (!cookieMap.keySet().contains(keyOfACookie))
-                        cookieMap.put(keyOfACookie, valueOfACookie);
-                }
-            }
-        }
-    }
-
-    private static String processJson(final HttpsURLConnection httpsURLConnection) {
-
-        BufferedInputStream bufferedInputStream = null;
-        ByteArrayOutputStream byteArrayOutputStream = null;
+    private static void openExcelFile() {
         try {
-            if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
-                throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
-            if (httpsURLConnection.getContentLength() <= 0)
-                throw new Exception("Content Length = " + httpsURLConnection.getContentLength());
-            InputStream inputStream;
-            final String contentEncoding = httpsURLConnection.getContentEncoding();
-            if (contentEncoding == null)
-                inputStream = httpsURLConnection.getInputStream();
-            else
-                switch (contentEncoding) {
-                    case "gzip":
-                        inputStream = new GZIPInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    case "deflate":
-                        inputStream = new DeflaterInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    case "br":
-                        inputStream = new BrotliCompressorInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    default:
-                        inputStream = httpsURLConnection.getInputStream();
-                }
-            bufferedInputStream = new BufferedInputStream(inputStream);
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] bytes = new byte[httpsURLConnection.getContentLength()];
-            int length;
-            while ((length = bufferedInputStream.read(bytes)) > 0) {
-                byteArrayOutputStream.write(bytes, 0, length);
-            }
-            String[] contentTypes = httpsURLConnection.getContentType().split(";");
-            for (String encoding : contentTypes)
-                if (encoding.contains("charset=")) {
-                    encoding = encoding.trim();
-                    return byteArrayOutputStream.toString(encoding.substring(8));
-                }
-        } catch (Exception e) {
-            MyUtils.handleException(e, logger);
-        } finally {
-            try {
-                if (byteArrayOutputStream != null)
-                    byteArrayOutputStream.close();
-                if (bufferedInputStream != null)
-                    bufferedInputStream.close();
-            } catch (Exception e) {
-                MyUtils.handleException(e, logger);
-            }
-        }
-        return null;
-    }
-
-    private static void closeConnection(final HttpsURLConnection httpsURLConnection) {
-        try {
-            if (httpsURLConnection != null)
-                httpsURLConnection.disconnect();
+            Runtime.getRuntime().exec("");
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
         }

@@ -2,7 +2,8 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class LowestPriceJsonPost {
+@SuppressWarnings("unused")
+class LowestPriceJsonPost {
 
     @JSONField(name = "dcity")
     String dcity;

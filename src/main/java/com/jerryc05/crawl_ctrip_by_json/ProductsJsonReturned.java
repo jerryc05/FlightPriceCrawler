@@ -2,28 +2,11 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class ProductsJsonReturned {
-
-    @JSONField(name = "msg")
-    private String msg;
+@SuppressWarnings("unused")
+class ProductsJsonReturned {
 
     @JSONField(name = "data")
     private Data data;
-
-    @JSONField(name = "status")
-    private int status;
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public Data getData() {
-        return data;
-    }
-
-    public int getStatus() {
-        return status;
-    }
 
     class Data {
 
@@ -448,5 +431,13 @@ public class ProductsJsonReturned {
                 }
             }
         }
+    }
+
+    public Data getData() {
+        return data;
+    }
+
+    public void setData(Data data) {
+        this.data = data;
     }
 }

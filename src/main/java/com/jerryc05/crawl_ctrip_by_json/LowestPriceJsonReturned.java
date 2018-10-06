@@ -2,76 +2,54 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 class LowestPriceJsonReturned {
 
-//    @JSONField(name = "data")
-//    Data data;
+    @JSONField(name = "data")
+    private Data data;
 
-    @JSONField(name = "status")
-    int status;
-
-    @JSONField(name = "msg")
-    String msg;
-
-    int getStatus() {
-        return status;
+    public Data getData() {
+        return data;
     }
 
-//    Data getData() {
-//        return data;
-//    }
-//
-//    void setData(Data data) {
-//        this.data = data;
-//    }
-
-    void setStatus(int status) {
-        this.status = status;
-    }
-
-    String getMsg() {
-        return msg;
-    }
-
-    void setMsg(String msg) {
-        this.msg = msg;
+    public void setData(Data data) {
+        this.data = data;
     }
 
     class Data {
 
         @JSONField(name = "oneWayPrice")
-        List<Map<String, Integer>> oneWayPrice;
+        private Map<String, Integer>[] oneWayPrice;
 
         @JSONField(name = "roundTripPrice")
-        Map<String, Map<String, Integer>> roundTripPrice;
+        private Map<String, Map<String, Integer>> roundTripPrice;
 
         @JSONField(name = "singleToRoundPrice")
-        Object singleToRoundPrice;
+        private Object singleToRoundPrice;
 
-        List<Map<String, Integer>> getOneWayPrice() {
+        public Map<String, Integer>[] getOneWayPrice() {
             return oneWayPrice;
         }
 
-        void setOneWayPrice(List<Map<String, Integer>> oneWayPrice) {
+        public void setOneWayPrice(Map<String, Integer>[] oneWayPrice) {
             this.oneWayPrice = oneWayPrice;
         }
 
-        Map<String, Map<String, Integer>> getRoundTripPrice() {
+        public Map<String, Map<String, Integer>> getRoundTripPrice() {
             return roundTripPrice;
         }
 
-        void setRoundTripPrice(Map<String, Map<String, Integer>> roundTripPrice) {
+        public void setRoundTripPrice(Map<String, Map<String, Integer>> roundTripPrice) {
             this.roundTripPrice = roundTripPrice;
         }
 
-        Object getSingleToRoundPrice() {
+        public Object getSingleToRoundPrice() {
             return singleToRoundPrice;
         }
 
-        void setSingleToRoundPrice(Object singleToRoundPrice) {
+        public void setSingleToRoundPrice(Object singleToRoundPrice) {
             this.singleToRoundPrice = singleToRoundPrice;
         }
     }
