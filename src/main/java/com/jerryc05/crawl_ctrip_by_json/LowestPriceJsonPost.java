@@ -4,14 +4,14 @@ import com.alibaba.fastjson.annotation.JSONField;
 
 public class LowestPriceJsonPost {
 
+    @JSONField(name = "flightWay")
+    String flightWay;
+
     @JSONField(name = "dcity")
     String dcity;
 
     @JSONField(name = "acity")
     String acity;
-
-    @JSONField(name = "flightWay")
-    String flightWay;
 
     @JSONField(name = "army")
     boolean army = false;

@@ -26,7 +26,7 @@ class MyUtils {
     static final String ACCEPT_ENCODING = "Accept-Encoding";
     static final String GZIP = "gzip";
     static final String USER_AGENT = "User-Agent";
-    static final String MOZILLA = "Mozilla/5.0 (Windows NT) (KHTML, like Gecko) Chrome/";
+    static final String MOZILLA = "Mozilla/5.0 (Windows NT 10.0;) Gecko/ Firefox/";
     static final String CONTENT_TYPE = "Content-Type";
     static final String APP_JSON = "application/json";
     static final String CONTENT_LENGTH = "Content-Length";
@@ -86,7 +86,7 @@ class MyUtils {
         return cookieMap;
     }
 
-    public static void openFile(final String filePath, final Logger logger) {
+    static void openFile(final String filePath, final Logger logger) {
         try {
             Desktop.getDesktop().open(new File(filePath));
         } catch (Exception e) {

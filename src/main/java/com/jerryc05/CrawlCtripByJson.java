@@ -5,6 +5,8 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.jerryc05.crawl_ctrip_by_json.LowestPriceJsonPost;
 import com.jerryc05.crawl_ctrip_by_json.LowestPriceJsonReturned;
 import com.jerryc05.crawl_ctrip_by_json.ProductsJsonPost;
+import com.jerryc05.crawl_ctrip_by_json.ProductsJsonReturned;
+import com.jerryc05.crawl_ctrip_by_json.ProductsJsonReturned.Data.RecommendData.RedirectSingleProduct.FlightsItem;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -24,7 +26,7 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class CrawlCtripByJson {
+class CrawlCtripByJson {
 
     private static Map<String, String> cookieMap = null;
     private static String departureAirportCode;
@@ -38,10 +40,10 @@ public class CrawlCtripByJson {
     private CrawlCtripByJson() {
     }
 
-    public static boolean crawlCtripByJson(final String departureAirportCode,
-                                           final String arrivalAirportCode,
-                                           final String departDate,
-                                           final String returnDate) {
+    static boolean crawlCtripByJson(final String departureAirportCode,
+                                    final String arrivalAirportCode,
+                                    final String departDate,
+                                    final String returnDate) {
 
         logger = Logger.getLogger(CrawlCtripByJson.class.getName());
         CrawlCtripByJson.departureAirportCode = departureAirportCode;
@@ -61,6 +63,7 @@ public class CrawlCtripByJson {
                     return false;
                 else {
                     logger.info(() -> "getLowestPriceJson() successful!");
+                    writeFile();
                     MyUtils.openFile(excelFilePath, logger);
                 }
             }
@@ -109,6 +112,7 @@ public class CrawlCtripByJson {
 
         HttpsURLConnection httpsURLConnection = null;
         URL url;
+        ProductsJsonReturned productsJsonReturned;
 
         try {
             url = new URL("https://flights.ctrip.com/itinerary/api/12808/products");
@@ -138,7 +142,8 @@ public class CrawlCtripByJson {
                     productsJsonPost, SerializerFeature.NotWriteDefaultValue);
             logger.info(() -> json);
 
-            httpsURLConnection.setRequestProperty(MyUtils.CONTENT_LENGTH, Integer.toString(json.length()));
+            httpsURLConnection.setRequestProperty(
+                    MyUtils.CONTENT_LENGTH, Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
             outputStream.write(json.getBytes());
             outputStream.close();
@@ -147,6 +152,7 @@ public class CrawlCtripByJson {
             final String result = MyUtils.processJson(httpsURLConnection, logger);
             logger.info(() -> result);
             if (result == null) return false;
+            productsJsonReturned = JSON.parseObject(result, ProductsJsonReturned.class);
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
             return false;
@@ -156,7 +162,15 @@ public class CrawlCtripByJson {
 
         XSSFSheet sheet = workbook.createSheet(
                 departureAirportCode + "->" + arrivalAirportCode + "@" + departDate);
-
+        XSSFRow row0 = sheet.createRow(0);
+        FlightsItem recFlight = productsJsonReturned.getData().getRecommendData()
+                .getRedirectSingleProduct().getFlights()[0];
+        row0.createCell(1).setCellValue(recFlight.getTransportNo());
+        row0.createCell(2).setCellValue(recFlight.getDepartureCityName());
+        row0.createCell(3).setCellValue(recFlight.getArrivalCityName());
+        row0.createCell(4).setCellValue(recFlight.getDepartureTime());
+        row0.createCell(5).setCellValue(recFlight.getArrivalTime());
+        row0.createCell(6).setCellValue(recFlight.getPrice());
         return true;
     }
 
@@ -193,7 +207,8 @@ public class CrawlCtripByJson {
                     lowestPriceJsonPost, SerializerFeature.NotWriteDefaultValue);
             logger.info(() -> json);
 
-            httpsURLConnection.setRequestProperty(MyUtils.CONTENT_LENGTH, Integer.toString(json.length()));
+            httpsURLConnection.setRequestProperty(
+                    MyUtils.CONTENT_LENGTH, Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
             outputStream.write(json.getBytes());
             outputStream.close();
@@ -201,6 +216,7 @@ public class CrawlCtripByJson {
 
             final String result = MyUtils.processJson(httpsURLConnection, logger);
             logger.info(() -> result);
+            if (result == null) return false;
             lowestPriceJsonReturned = JSON.parseObject(result, LowestPriceJsonReturned.class);
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
@@ -253,7 +269,6 @@ public class CrawlCtripByJson {
                 rowNumber++;
             }
         }
-        writeFile();
         return true;
     }
 
