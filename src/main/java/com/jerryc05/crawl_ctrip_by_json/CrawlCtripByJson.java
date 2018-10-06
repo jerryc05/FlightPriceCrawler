@@ -28,6 +28,7 @@ public class CrawlCtripByJson {
     private static String returnDate;
     private static Logger logger;
     private static final XSSFWorkbook workbook = new XSSFWorkbook();
+    private static String excelFilePath;
 
     private CrawlCtripByJson() {
     }
@@ -42,6 +43,7 @@ public class CrawlCtripByJson {
         CrawlCtripByJson.arrivalAirportCode = arrivalAirportCode;
         CrawlCtripByJson.departDate = departDate;
         CrawlCtripByJson.returnDate = returnDate;
+        excelFilePath = "D:/Ctrip[" + departureAirportCode + " - " + arrivalAirportCode + " @ " + departDate + "].xlsx";
         if (!initCookie())
             return false;
         else {
@@ -54,7 +56,7 @@ public class CrawlCtripByJson {
                     return false;
                 else {
                     logger.info(() -> "getLowestPriceJson() successful!");
-                    openExcelFile();
+                    MyUtils.openFile(excelFilePath, logger);
                 }
             }
         }
@@ -79,14 +81,15 @@ public class CrawlCtripByJson {
             httpsURLConnection.setReadTimeout(10 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
-            httpsURLConnection.setRequestProperty("Accept", "*/*");
-            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
-            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
+            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT_ENCODING, MyUtils.GZIP);
+            httpsURLConnection.setRequestProperty(MyUtils.USER_AGENT, MyUtils.MOZILLA);
             httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
             httpsURLConnection.connect();
 
             if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
-                throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
+                throw new UnsupportedOperationException(
+                        "HTTP " + httpsURLConnection.getResponseCode() + " Error");
             cookieMap = MyUtils.saveCookies(httpsURLConnection.getHeaderFields(), cookieMap);
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
@@ -111,9 +114,9 @@ public class CrawlCtripByJson {
             httpsURLConnection.setReadTimeout(5 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
-            httpsURLConnection.setRequestProperty("Accept", "*/*");
-            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
-            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
+            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT_ENCODING, MyUtils.GZIP);
+            httpsURLConnection.setRequestProperty(MyUtils.USER_AGENT, MyUtils.MOZILLA);
             httpsURLConnection.setRequestProperty("Content-Type", "application/json");
             httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
@@ -165,9 +168,9 @@ public class CrawlCtripByJson {
             httpsURLConnection.setReadTimeout(5 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
-            httpsURLConnection.setRequestProperty("Accept", "*/*");
-            httpsURLConnection.setRequestProperty("Accept-Encoding", "gzip");
-            httpsURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
+            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT_ENCODING, MyUtils.GZIP);
+            httpsURLConnection.setRequestProperty(MyUtils.USER_AGENT, MyUtils.MOZILLA);
             httpsURLConnection.setRequestProperty("Content-Type", "application/json");
             httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
@@ -227,19 +230,11 @@ public class CrawlCtripByJson {
                 rowNumber++;
             }
         }
-        try (FileOutputStream out = new FileOutputStream("D:/CtripFlightPrices.xlsx")) {
+        try (FileOutputStream out = new FileOutputStream(excelFilePath)) {
             workbook.write(out);
         } catch (IOException e) {
             MyUtils.handleException(e, logger);
         }
         return true;
-    }
-
-    private static void openExcelFile() {
-        try {
-            Runtime.getRuntime().exec("");
-        } catch (Exception e) {
-            MyUtils.handleException(e, logger);
-        }
     }
 }

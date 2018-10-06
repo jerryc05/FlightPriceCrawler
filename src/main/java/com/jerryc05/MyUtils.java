@@ -2,8 +2,10 @@ package com.jerryc05;
 
 import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
 
+import java.awt.Desktop;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,8 +21,12 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class MyUtils {
 
-    private MyUtils() {
-    }
+    public static final String ACCEPT = "Accept";
+    public static final String ACCEPT_ALL = "*/*";
+    public static final String ACCEPT_ENCODING = "Accept-Encoding";
+    public static final String GZIP = "gzip";
+    public static final String USER_AGENT = "User-Agent";
+    public static final String MOZILLA = "Mozilla/5.0";
 
     public static HttpsURLConnection addCookiesToConnection(
             final HttpsURLConnection httpsURLConnection, Map<String, String> cookieMap) {
@@ -54,60 +60,7 @@ public class MyUtils {
         logger.warning(stringWriter::toString);
     }
 
-    public static String processJson(
-            final HttpsURLConnection httpsURLConnection, final Logger logger) {
-
-        BufferedInputStream bufferedInputStream = null;
-        ByteArrayOutputStream byteArrayOutputStream = null;
-        try {
-            if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
-                throw new Exception("HTTP " + httpsURLConnection.getResponseCode() + " Error");
-            if (httpsURLConnection.getContentLength() <= 0)
-                throw new Exception("Content Length = " + httpsURLConnection.getContentLength());
-            InputStream inputStream;
-            final String contentEncoding = httpsURLConnection.getContentEncoding();
-            if (contentEncoding == null)
-                inputStream = httpsURLConnection.getInputStream();
-            else
-                switch (contentEncoding) {
-                    case "gzip":
-                        inputStream = new GZIPInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    case "deflate":
-                        inputStream = new DeflaterInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    case "br":
-                        inputStream = new BrotliCompressorInputStream(httpsURLConnection.getInputStream());
-                        break;
-                    default:
-                        inputStream = httpsURLConnection.getInputStream();
-                }
-            bufferedInputStream = new BufferedInputStream(inputStream);
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] bytes = new byte[httpsURLConnection.getContentLength()];
-            int length;
-            while ((length = bufferedInputStream.read(bytes)) > 0) {
-                byteArrayOutputStream.write(bytes, 0, length);
-            }
-            String[] contentTypes = httpsURLConnection.getContentType().split(";");
-            for (String encoding : contentTypes)
-                if (encoding.contains("charset=")) {
-                    encoding = encoding.trim();
-                    return byteArrayOutputStream.toString(encoding.substring(8));
-                }
-        } catch (Exception e) {
-            MyUtils.handleException(e, logger);
-        } finally {
-            try {
-                if (byteArrayOutputStream != null)
-                    byteArrayOutputStream.close();
-                if (bufferedInputStream != null)
-                    bufferedInputStream.close();
-            } catch (Exception e) {
-                MyUtils.handleException(e, logger);
-            }
-        }
-        return null;
+    private MyUtils() {
     }
 
     public static Map<String, String> saveCookies(
@@ -128,5 +81,63 @@ public class MyUtils {
             }
         }
         return cookieMap;
+    }
+
+    public static String processJson(
+            final HttpsURLConnection httpsURLConnection, final Logger logger) {
+
+        try {
+            if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
+                throw new UnsupportedOperationException(
+                        "HTTP " + httpsURLConnection.getResponseCode() + " Error");
+            if (httpsURLConnection.getContentLength() <= 0)
+                throw new UnsupportedOperationException(
+                        "Content Length = " + httpsURLConnection.getContentLength());
+            InputStream inputStream;
+            final String contentEncoding = httpsURLConnection.getContentEncoding();
+            if (contentEncoding == null)
+                inputStream = httpsURLConnection.getInputStream();
+            else
+                switch (contentEncoding) {
+                    case "gzip":
+                        inputStream = new GZIPInputStream(httpsURLConnection.getInputStream());
+                        break;
+                    case "deflate":
+                        inputStream = new DeflaterInputStream(httpsURLConnection.getInputStream());
+                        break;
+                    case "br":
+                        inputStream = new BrotliCompressorInputStream(httpsURLConnection.getInputStream());
+                        break;
+                    default:
+                        inputStream = httpsURLConnection.getInputStream();
+                }
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byte[] bytes = new byte[httpsURLConnection.getContentLength()];
+            int length;
+            while ((length = bufferedInputStream.read(bytes)) > 0) {
+                byteArrayOutputStream.write(bytes, 0, length);
+            }
+            String[] contentTypes = httpsURLConnection.getContentType().split(";");
+            for (String encoding : contentTypes)
+                if (encoding.contains("charset=")) {
+                    encoding = encoding.trim();
+                    return byteArrayOutputStream.toString(encoding.substring(8));
+                }
+
+            byteArrayOutputStream.close();
+            bufferedInputStream.close();
+        } catch (Exception e) {
+            MyUtils.handleException(e, logger);
+        }
+        return null;
+    }
+
+    public static void openFile(final String filePath, final Logger logger) {
+        try {
+            Desktop.getDesktop().open(new File(filePath));
+        } catch (Exception e) {
+            MyUtils.handleException(e, logger);
+        }
     }
 }

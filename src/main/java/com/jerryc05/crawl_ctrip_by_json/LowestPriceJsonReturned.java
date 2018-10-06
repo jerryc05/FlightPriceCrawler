@@ -4,7 +4,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.Map;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
 class LowestPriceJsonReturned {
 
     @JSONField(name = "data")

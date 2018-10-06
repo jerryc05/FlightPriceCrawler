@@ -2,7 +2,6 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-@SuppressWarnings("unused")
 class ProductsJsonReturned {
 
     @JSONField(name = "data")

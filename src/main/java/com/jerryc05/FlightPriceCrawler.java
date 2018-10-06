@@ -36,6 +36,7 @@ public class FlightPriceCrawler {
                 "Arrival airport IATA code:", arrivalAirportField,
                 "Departure date(YYYY-MM-DD):", departDateField,
                 "Return date(YYYY-MM-DD) or blank:", returnDateField};
+        returnDateField.setText("Please leave blank, it is not working!");//todo
         if (JOptionPane.showConfirmDialog(
                 null, popupWindow, "Flight Search", JOptionPane.DEFAULT_OPTION)
                 == JOptionPane.OK_OPTION) {
@@ -45,14 +46,19 @@ public class FlightPriceCrawler {
                 arrivalAirportCode = "sha";
             if (departDateField.getText().trim().equals(""))
                 departDate = "2018-11-20";
+            returnDateField.setText(null);//todo
             returnDate = returnDateField.getText().trim();
+        } else {
+            System.exit(-2);
         }
     }
 
     private static boolean crawlCtripByJson() {
         CompletableFuture<Boolean> cfCtrip = CompletableFuture.supplyAsync(() ->
                 CrawlCtripByJson.crawlCtripByJson(
-                        departureAirportCode, arrivalAirportCode, departDate, returnDate));
+                        departureAirportCode.toUpperCase(),
+                        arrivalAirportCode.toUpperCase(),
+                        departDate, returnDate));
         try {
             return cfCtrip.get();
         } catch (Exception e) {
