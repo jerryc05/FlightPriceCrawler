@@ -1,14 +1,19 @@
-package com.jerryc05.crawl_ctrip_by_json;
+package com.jerryc05;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.jerryc05.MyUtils;
-import com.jerryc05.crawl_ctrip_by_json.ProductsJsonPost.AirportParamsItem;
+import com.jerryc05.crawl_ctrip_by_json.LowestPriceJsonPost;
+import com.jerryc05.crawl_ctrip_by_json.LowestPriceJsonReturned;
+import com.jerryc05.crawl_ctrip_by_json.ProductsJsonPost;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -117,23 +122,23 @@ public class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
             httpsURLConnection.setRequestProperty(MyUtils.ACCEPT_ENCODING, MyUtils.GZIP);
             httpsURLConnection.setRequestProperty(MyUtils.USER_AGENT, MyUtils.MOZILLA);
-            httpsURLConnection.setRequestProperty("Content-Type", "application/json");
+            httpsURLConnection.setRequestProperty(MyUtils.CONTENT_TYPE, MyUtils.APP_JSON);
             httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
             ProductsJsonPost productsJsonPost = new ProductsJsonPost();
-            productsJsonPost.airportParams = new AirportParamsItem[1];
-            productsJsonPost.airportParams[0] = productsJsonPost.new AirportParamsItem();
-            productsJsonPost.airportParams[0].dcity = departureAirportCode;
-            productsJsonPost.airportParams[0].acity = arrivalAirportCode;
-            productsJsonPost.airportParams[0].date = departDate;
-            if (!returnDate.equals("")) {//todo d
-                productsJsonPost.flightWay = "";
+            productsJsonPost.setAirportParams(new ProductsJsonPost.AirportParamsItem[1]);
+            productsJsonPost.getAirportParams()[0] = productsJsonPost.new AirportParamsItem();
+            productsJsonPost.getAirportParams()[0].setDcity(departureAirportCode);
+            productsJsonPost.getAirportParams()[0].setAcity(arrivalAirportCode);
+            productsJsonPost.getAirportParams()[0].setDate(departDate);
+            if (!returnDate.equals("")) {
+                productsJsonPost.setFlightWay("");//todo
             }
             final String json = JSON.toJSONString(
                     productsJsonPost, SerializerFeature.NotWriteDefaultValue);
             logger.info(() -> json);
 
-            httpsURLConnection.setRequestProperty("Content-Length", Integer.toString(json.length()));
+            httpsURLConnection.setRequestProperty(MyUtils.CONTENT_LENGTH, Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
             outputStream.write(json.getBytes());
             outputStream.close();
@@ -141,6 +146,7 @@ public class CrawlCtripByJson {
 
             final String result = MyUtils.processJson(httpsURLConnection, logger);
             logger.info(() -> result);
+            if (result == null) return false;
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
             return false;
@@ -150,6 +156,7 @@ public class CrawlCtripByJson {
 
         XSSFSheet sheet = workbook.createSheet(
                 departureAirportCode + "->" + arrivalAirportCode + "@" + departDate);
+
         return true;
     }
 
@@ -171,22 +178,22 @@ public class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
             httpsURLConnection.setRequestProperty(MyUtils.ACCEPT_ENCODING, MyUtils.GZIP);
             httpsURLConnection.setRequestProperty(MyUtils.USER_AGENT, MyUtils.MOZILLA);
-            httpsURLConnection.setRequestProperty("Content-Type", "application/json");
+            httpsURLConnection.setRequestProperty(MyUtils.CONTENT_TYPE, MyUtils.APP_JSON);
             httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
             LowestPriceJsonPost lowestPriceJsonPost = new LowestPriceJsonPost();
-            lowestPriceJsonPost.dcity = departureAirportCode;
-            lowestPriceJsonPost.acity = arrivalAirportCode;
+            lowestPriceJsonPost.setDcity(departureAirportCode);
+            lowestPriceJsonPost.setAcity(arrivalAirportCode);
             if (returnDate.equals(""))
-                lowestPriceJsonPost.flightWay = "Oneway";
+                lowestPriceJsonPost.setFlightWay("Oneway");
             else
-                lowestPriceJsonPost.flightWay = "Roundtrip";
+                lowestPriceJsonPost.setFlightWay("Roundtrip");
 
             final String json = JSON.toJSONString(
                     lowestPriceJsonPost, SerializerFeature.NotWriteDefaultValue);
             logger.info(() -> json);
 
-            httpsURLConnection.setRequestProperty("Content-Length", Integer.toString(json.length()));
+            httpsURLConnection.setRequestProperty(MyUtils.CONTENT_LENGTH, Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
             outputStream.write(json.getBytes());
             outputStream.close();
@@ -207,14 +214,30 @@ public class CrawlCtripByJson {
         if (lowestPriceJsonReturned == null)
             return false;
         if (returnDate.equals("")) {
-            int rowNumber = 0;
+            XSSFRow row0 = sheet.createRow(0);
+            row0.createCell(0).setCellValue("Arrival Date");
+            row0.createCell(1).setCellValue("Flight Price");
+            int rowNumber = 1;
             for (Map.Entry<String, Integer> entry :
                     lowestPriceJsonReturned.getData().getOneWayPrice()[0].entrySet()) {
                 XSSFRow row = sheet.createRow(rowNumber);
-                row.createCell(0).setCellValue(entry.getKey());
-                row.createCell(1).setCellValue(entry.getValue());
+                XSSFCell cell0 = row.createCell(0);
+                String date = entry.getKey();
+                date = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6);
+                cell0.setCellValue(date);
+                XSSFCell cell1 = row.createCell(1);
+                cell1.setCellValue(entry.getValue());
+
+                XSSFCellStyle cellStyle = workbook.createCellStyle();
+                XSSFDataFormat dataFormat = workbook.createDataFormat();
+                cellStyle.setDataFormat(dataFormat.getFormat("yyyy\"年\"m\"月\"d\"日\";@"));
+                cell0.setCellStyle(cellStyle);
+                cellStyle.setDataFormat(dataFormat.getFormat("[$¥-zh-CN]#,##0.00"));
+                cell1.setCellStyle(cellStyle);
                 rowNumber++;
             }
+            sheet.autoSizeColumn(0);
+            sheet.setColumnWidth(1, 10 * 256);
         } else {
             int rowNumber = 0;
             int colNumber;
@@ -230,11 +253,20 @@ public class CrawlCtripByJson {
                 rowNumber++;
             }
         }
+        writeFile();
+        return true;
+    }
+
+    private static void writeFile() {
+
         try (FileOutputStream out = new FileOutputStream(excelFilePath)) {
             workbook.write(out);
-        } catch (IOException e) {
-            MyUtils.handleException(e, logger);
+        } catch (FileNotFoundException fNF) {
+            MyUtils.handleException(fNF, logger);
+            excelFilePath += ".xlsx";
+            writeFile();
+        } catch (IOException iO) {
+            MyUtils.handleException(iO, logger);
         }
-        return true;
     }
 }

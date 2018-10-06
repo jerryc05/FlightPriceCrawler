@@ -2,16 +2,10 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-class ProductsJsonPost {
+public class ProductsJsonPost {
 
     @JSONField(name = "airportParams")
     AirportParamsItem[] airportParams;
-
-    @JSONField(name = "hasBaby")
-    boolean hasBaby = false;
-
-    @JSONField(name = "hasChild")
-    boolean hasChild = false;
 
     @JSONField(name = "searchIndex")
     int searchIndex = 1;
@@ -26,28 +20,31 @@ class ProductsJsonPost {
         return airportParams;
     }
 
-    public boolean isHasBaby() {
-        return hasBaby;
-    }
-
-    public boolean isHasChild() {
-        return hasChild;
+    public void setAirportParams(AirportParamsItem[] airportParams) {
+        this.airportParams = airportParams;
     }
 
     public int getSearchIndex() {
         return searchIndex;
     }
 
+    public void setSearchIndex(int searchIndex) {
+        this.searchIndex = searchIndex;
+    }
+
     public String getFlightWay() {
         return flightWay;
     }
 
-    public String getClassType() {
-        return classType;
+    public void setFlightWay(String flightWay) {
+        this.flightWay = flightWay;
     }
 
-    @SuppressWarnings("unused")
-    class AirportParamsItem {
+    public void setClassType(String classType) {
+        this.classType = classType;
+    }
+
+    public class AirportParamsItem {
 
         @JSONField(name = "dcity")
         String dcity;
@@ -110,6 +107,42 @@ class ProductsJsonPost {
 
         public String getAportname() {
             return aportname;
+        }
+
+        public void setDcity(String dcity) {
+            this.dcity = dcity;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
+
+        public void setDcityname(String dcityname) {
+            this.dcityname = dcityname;
+        }
+
+        public void setDcityid(int dcityid) {
+            this.dcityid = dcityid;
+        }
+
+        public void setAcityname(String acityname) {
+            this.acityname = acityname;
+        }
+
+        public void setAcity(String acity) {
+            this.acity = acity;
+        }
+
+        public void setAport(String aport) {
+            this.aport = aport;
+        }
+
+        public void setAcityid(int acityid) {
+            this.acityid = acityid;
+        }
+
+        public void setAportname(String aportname) {
+            this.aportname = aportname;
         }
     }
 }

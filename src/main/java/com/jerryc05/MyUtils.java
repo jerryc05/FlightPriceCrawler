@@ -19,16 +19,22 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class MyUtils {
+class MyUtils {
 
-    public static final String ACCEPT = "Accept";
-    public static final String ACCEPT_ALL = "*/*";
-    public static final String ACCEPT_ENCODING = "Accept-Encoding";
-    public static final String GZIP = "gzip";
-    public static final String USER_AGENT = "User-Agent";
-    public static final String MOZILLA = "Mozilla/5.0";
+    static final String ACCEPT = "Accept";
+    static final String ACCEPT_ALL = "*/*";
+    static final String ACCEPT_ENCODING = "Accept-Encoding";
+    static final String GZIP = "gzip";
+    static final String USER_AGENT = "User-Agent";
+    static final String MOZILLA = "Mozilla/5.0 (Windows NT) (KHTML, like Gecko) Chrome/";
+    static final String CONTENT_TYPE = "Content-Type";
+    static final String APP_JSON = "application/json";
+    static final String CONTENT_LENGTH = "Content-Length";
 
-    public static HttpsURLConnection addCookiesToConnection(
+    private MyUtils() {
+    }
+
+    static HttpsURLConnection addCookiesToConnection(
             final HttpsURLConnection httpsURLConnection, Map<String, String> cookieMap) {
         if (cookieMap != null) {
             StringBuilder parseCookie = new StringBuilder();
@@ -42,7 +48,7 @@ public class MyUtils {
         return httpsURLConnection;
     }
 
-    public static void closeConnection(
+    static void closeConnection(
             final HttpsURLConnection httpsURLConnection, final Logger logger) {
 
         try {
@@ -53,17 +59,14 @@ public class MyUtils {
         }
     }
 
-    public static void handleException(final Exception e, final Logger logger) {
+    static void handleException(final Exception e, final Logger logger) {
 
         StringWriter stringWriter = new StringWriter();
         e.printStackTrace(new PrintWriter(stringWriter));
         logger.warning(stringWriter::toString);
     }
 
-    private MyUtils() {
-    }
-
-    public static Map<String, String> saveCookies(
+    static Map<String, String> saveCookies(
             final Map<String, List<String>> map, Map<String, String> cookieMap) {
 
         for (Map.Entry<String, List<String>> headerEntry : map.entrySet()) {
@@ -83,7 +86,15 @@ public class MyUtils {
         return cookieMap;
     }
 
-    public static String processJson(
+    public static void openFile(final String filePath, final Logger logger) {
+        try {
+            Desktop.getDesktop().open(new File(filePath));
+        } catch (Exception e) {
+            MyUtils.handleException(e, logger);
+        }
+    }
+
+    static String processJson(
             final HttpsURLConnection httpsURLConnection, final Logger logger) {
 
         try {
@@ -131,13 +142,5 @@ public class MyUtils {
             MyUtils.handleException(e, logger);
         }
         return null;
-    }
-
-    public static void openFile(final String filePath, final Logger logger) {
-        try {
-            Desktop.getDesktop().open(new File(filePath));
-        } catch (Exception e) {
-            MyUtils.handleException(e, logger);
-        }
     }
 }

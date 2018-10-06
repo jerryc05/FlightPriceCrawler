@@ -4,7 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.Map;
 
-class LowestPriceJsonReturned {
+public class LowestPriceJsonReturned {
 
     @JSONField(name = "data")
     private Data data;
@@ -17,7 +17,7 @@ class LowestPriceJsonReturned {
         this.data = data;
     }
 
-    class Data {
+    public class Data {
 
         @JSONField(name = "oneWayPrice")
         private Map<String, Integer>[] oneWayPrice;

@@ -2,158 +2,71 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-class ProductsJsonReturned {
+public class ProductsJsonReturned {
 
     @JSONField(name = "data")
     private Data data;
 
-    class Data {
+    public class Data {
 
         @JSONField(name = "recommendData")
         private RecommendData recommendData;
 
-        @JSONField(name = "highFrequencyConfig")
-        private Object highFrequencyConfig;
-
-        @JSONField(name = "roundNear")
-        private boolean roundNear;
-
-        @JSONField(name = "error")
-        private Object error;
-
-        @JSONField(name = "transitCities")
-        private Object transitCities;
-
-        @JSONField(name = "transitPoints")
-        private Object transitPoints;
-
-        @JSONField(name = "roundNearsTransports")
-        private Object roundNearsTransports;
-
         @JSONField(name = "routeList")
         private RouteListItem[] routeList;
 
+        public void setRecommendData(RecommendData recommendData) {
+            this.recommendData = recommendData;
+        }
+
+        public void setRouteList(RouteListItem[] routeList) {
+            this.routeList = routeList;
+        }
+
         public RecommendData getRecommendData() {
             return recommendData;
-        }
-
-        public Object getHighFrequencyConfig() {
-            return highFrequencyConfig;
-        }
-
-        public boolean isRoundNear() {
-            return roundNear;
-        }
-
-        public Object getError() {
-            return error;
-        }
-
-        public Object getTransitCities() {
-            return transitCities;
-        }
-
-        public Object getTransitPoints() {
-            return transitPoints;
-        }
-
-        public Object getRoundNearsTransports() {
-            return roundNearsTransports;
         }
 
         public RouteListItem[] getRouteList() {
             return routeList;
         }
 
-        class RecommendData {
+        public class RecommendData {
 
             @JSONField(name = "redirectSingleProduct")
             private RedirectSingleProduct redirectSingleProduct;
-
-            @JSONField(name = "redirectMRoute")
-            private Object redirectMRoute;
-
-            @JSONField(name = "singleGroupProduct")
-            private Object singleGroupProduct;
-
-            @JSONField(name = "redirectGroupProduct")
-            private Object redirectGroupProduct;
 
             public RedirectSingleProduct getRedirectSingleProduct() {
                 return redirectSingleProduct;
             }
 
-            public Object getRedirectMRoute() {
-                return redirectMRoute;
+            public void setRedirectSingleProduct(RedirectSingleProduct redirectSingleProduct) {
+                this.redirectSingleProduct = redirectSingleProduct;
             }
 
-            public Object getSingleGroupProduct() {
-                return singleGroupProduct;
-            }
-
-            public Object getRedirectGroupProduct() {
-                return redirectGroupProduct;
-            }
-
-            class RedirectSingleProduct {
-
-                @JSONField(name = "buses")
-                private Object buses;
+            public class RedirectSingleProduct {
 
                 @JSONField(name = "flights")
                 private FlightsItem[] flights;
-
-                @JSONField(name = "trains")
-                private Object trains;
 
                 public FlightsItem[] getFlights() {
                     return flights;
                 }
 
-                public Object getTrains() {
-                    return trains;
+                public void setFlights(FlightsItem[] flights) {
+                    this.flights = flights;
                 }
 
-                class FlightsItem {
+                public class FlightsItem {
 
                     @JSONField(name = "departureTime")
                     private String departureTime;
 
-                    @JSONField(name = "cabin")
-                    private String cabin;
-
-                    @JSONField(name = "weight")
-                    private int weight;
-
-                    @JSONField(name = "departureCityEncode")
-                    private Object departureCityEncode;
-
                     @JSONField(name = "transportNo")
                     private String transportNo;
 
-                    @JSONField(name = "departureCityTlc")
-                    private String departureCityTlc;
-
-                    @JSONField(name = "deptStationName")
-                    private Object deptStationName;
-
-                    @JSONField(name = "segmentNo")
-                    private int segmentNo;
-
                     @JSONField(name = "departureCityName")
                     private String departureCityName;
-
-                    @JSONField(name = "arrivalCityEncode")
-                    private Object arrivalCityEncode;
-
-                    @JSONField(name = "priceClass")
-                    private String priceClass;
-
-                    @JSONField(name = "departureCityId")
-                    private int departureCityId;
-
-                    @JSONField(name = "arrivalCityId")
-                    private int arrivalCityId;
 
                     @JSONField(name = "arrivalTime")
                     private String arrivalTime;
@@ -164,106 +77,58 @@ class ProductsJsonReturned {
                     @JSONField(name = "arrivalCityName")
                     private String arrivalCityName;
 
-                    @JSONField(name = "arrivalStationName")
-                    private Object arrivalStationName;
-
-                    @JSONField(name = "arrivalCityTlc")
-                    private String arrivalCityTlc;
-
-                    @JSONField(name = "routeNo")
-                    private int routeNo;
-
-                    @JSONField(name = "productType")
-                    private String productType;
-
                     public String getDepartureTime() {
                         return departureTime;
                     }
 
-                    public String getCabin() {
-                        return cabin;
-                    }
-
-                    public int getWeight() {
-                        return weight;
-                    }
-
-                    public Object getDepartureCityEncode() {
-                        return departureCityEncode;
+                    public void setDepartureTime(String departureTime) {
+                        this.departureTime = departureTime;
                     }
 
                     public String getTransportNo() {
                         return transportNo;
                     }
 
-                    public String getDepartureCityTlc() {
-                        return departureCityTlc;
-                    }
-
-                    public Object getDeptStationName() {
-                        return deptStationName;
-                    }
-
-                    public int getSegmentNo() {
-                        return segmentNo;
+                    public void setTransportNo(String transportNo) {
+                        this.transportNo = transportNo;
                     }
 
                     public String getDepartureCityName() {
                         return departureCityName;
                     }
 
-                    public Object getArrivalCityEncode() {
-                        return arrivalCityEncode;
-                    }
-
-                    public String getPriceClass() {
-                        return priceClass;
-                    }
-
-                    public int getDepartureCityId() {
-                        return departureCityId;
-                    }
-
-                    public int getArrivalCityId() {
-                        return arrivalCityId;
+                    public void setDepartureCityName(String departureCityName) {
+                        this.departureCityName = departureCityName;
                     }
 
                     public String getArrivalTime() {
                         return arrivalTime;
                     }
 
+                    public void setArrivalTime(String arrivalTime) {
+                        this.arrivalTime = arrivalTime;
+                    }
+
                     public int getPrice() {
                         return price;
+                    }
+
+                    public void setPrice(int price) {
+                        this.price = price;
                     }
 
                     public String getArrivalCityName() {
                         return arrivalCityName;
                     }
 
-                    public Object getArrivalStationName() {
-                        return arrivalStationName;
-                    }
-
-                    public String getArrivalCityTlc() {
-                        return arrivalCityTlc;
-                    }
-
-                    public int getRouteNo() {
-                        return routeNo;
-                    }
-
-                    public String getProductType() {
-                        return productType;
-                    }
-
-                    public Object getBuses() {
-                        return buses;
+                    public void setArrivalCityName(String arrivalCityName) {
+                        this.arrivalCityName = arrivalCityName;
                     }
                 }
             }
         }
 
-        class RouteListItem {
+        public class RouteListItem {
 
             @JSONField(name = "legs")
             private LegsItem[] legs;
@@ -272,7 +137,11 @@ class ProductsJsonReturned {
                 return legs;
             }
 
-            class LegsItem {
+            public void setLegs(LegsItem[] legs) {
+                this.legs = legs;
+            }
+
+            public class LegsItem {
 
                 @JSONField(name = "flight")
                 private Flight flight;
@@ -284,11 +153,19 @@ class ProductsJsonReturned {
                     return flight;
                 }
 
+                public void setFlight(Flight flight) {
+                    this.flight = flight;
+                }
+
                 public Characteristic getCharacteristic() {
                     return characteristic;
                 }
 
-                class Flight {
+                public void setCharacteristic(Characteristic characteristic) {
+                    this.characteristic = characteristic;
+                }
+
+                public class Flight {
 
                     @JSONField(name = "arrivalAirportInfo")
                     private ArrivalAirportInfo arrivalAirportInfo;
@@ -308,9 +185,6 @@ class ProductsJsonReturned {
                     @JSONField(name = "departureAirportInfo")
                     private DepartureAirportInfo departureAirportInfo;
 
-                    @JSONField(name = "airlineCode")
-                    private String airlineCode;
-
                     @JSONField(name = "departureDate")
                     private String departureDate;
 
@@ -327,47 +201,83 @@ class ProductsJsonReturned {
                         return arrivalAirportInfo;
                     }
 
+                    public void setArrivalAirportInfo(ArrivalAirportInfo arrivalAirportInfo) {
+                        this.arrivalAirportInfo = arrivalAirportInfo;
+                    }
+
                     public String getMealType() {
                         return mealType;
+                    }
+
+                    public void setMealType(String mealType) {
+                        this.mealType = mealType;
                     }
 
                     public String getFlightNumber() {
                         return flightNumber;
                     }
 
+                    public void setFlightNumber(String flightNumber) {
+                        this.flightNumber = flightNumber;
+                    }
+
                     public String getArrivalDate() {
                         return arrivalDate;
+                    }
+
+                    public void setArrivalDate(String arrivalDate) {
+                        this.arrivalDate = arrivalDate;
                     }
 
                     public String getCraftTypeCode() {
                         return craftTypeCode;
                     }
 
+                    public void setCraftTypeCode(String craftTypeCode) {
+                        this.craftTypeCode = craftTypeCode;
+                    }
+
                     public DepartureAirportInfo getDepartureAirportInfo() {
                         return departureAirportInfo;
                     }
 
-                    public String getAirlineCode() {
-                        return airlineCode;
+                    public void setDepartureAirportInfo(DepartureAirportInfo departureAirportInfo) {
+                        this.departureAirportInfo = departureAirportInfo;
                     }
 
                     public String getDepartureDate() {
                         return departureDate;
                     }
 
+                    public void setDepartureDate(String departureDate) {
+                        this.departureDate = departureDate;
+                    }
+
                     public String getCraftTypeKindDisplayName() {
                         return craftTypeKindDisplayName;
+                    }
+
+                    public void setCraftTypeKindDisplayName(String craftTypeKindDisplayName) {
+                        this.craftTypeKindDisplayName = craftTypeKindDisplayName;
                     }
 
                     public String getAirlineName() {
                         return airlineName;
                     }
 
+                    public void setAirlineName(String airlineName) {
+                        this.airlineName = airlineName;
+                    }
+
                     public String getCraftTypeName() {
                         return craftTypeName;
                     }
 
-                    class DepartureAirportInfo {
+                    public void setCraftTypeName(String craftTypeName) {
+                        this.craftTypeName = craftTypeName;
+                    }
+
+                    public class DepartureAirportInfo {
 
                         @JSONField(name = "airportName")
                         private String airportName;
@@ -379,12 +289,20 @@ class ProductsJsonReturned {
                             return airportName;
                         }
 
+                        public void setAirportName(String airportName) {
+                            this.airportName = airportName;
+                        }
+
                         public Terminal getTerminal() {
                             return terminal;
                         }
+
+                        public void setTerminal(Terminal terminal) {
+                            this.terminal = terminal;
+                        }
                     }
 
-                    class ArrivalAirportInfo {
+                    public class ArrivalAirportInfo {
 
                         @JSONField(name = "airportName")
                         private String airportName;
@@ -396,12 +314,20 @@ class ProductsJsonReturned {
                             return airportName;
                         }
 
+                        public void setAirportName(String airportName) {
+                            this.airportName = airportName;
+                        }
+
                         public Terminal getTerminal() {
                             return terminal;
                         }
+
+                        public void setTerminal(Terminal terminal) {
+                            this.terminal = terminal;
+                        }
                     }
 
-                    class Terminal {
+                    public class Terminal {
 
                         @JSONField(name = "name")
                         private String name;
@@ -413,19 +339,31 @@ class ProductsJsonReturned {
                             return name;
                         }
 
+                        public void setName(String name) {
+                            this.name = name;
+                        }
+
                         public String getShortName() {
                             return shortName;
+                        }
+
+                        public void setShortName(String shortName) {
+                            this.shortName = shortName;
                         }
                     }
                 }
 
-                class Characteristic {
+                public class Characteristic {
 
                     @JSONField(name = "lowestPrice")
                     private int lowestPrice;
 
                     public int getLowestPrice() {
                         return lowestPrice;
+                    }
+
+                    public void setLowestPrice(int lowestPrice) {
+                        this.lowestPrice = lowestPrice;
                     }
                 }
             }

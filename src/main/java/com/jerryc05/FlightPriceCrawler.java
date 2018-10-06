@@ -1,7 +1,5 @@
 package com.jerryc05;
 
-import com.jerryc05.crawl_ctrip_by_json.CrawlCtripByJson;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
