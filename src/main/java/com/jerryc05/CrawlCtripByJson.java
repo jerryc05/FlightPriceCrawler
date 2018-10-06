@@ -164,7 +164,7 @@ class CrawlCtripByJson {
                 departureAirportCode + "->" + arrivalAirportCode + "@" + departDate);
         XSSFRow row0 = sheet.createRow(0);
         FlightsItem recFlight = productsJsonReturned.getData().getRecommendData()
-                .getRedirectSingleProduct().getFlights()[0];
+                .getRedirectSingleProduct().getFlights().get(0);
         row0.createCell(1).setCellValue(recFlight.getTransportNo());
         row0.createCell(2).setCellValue(recFlight.getDepartureCityName());
         row0.createCell(3).setCellValue(recFlight.getArrivalCityName());

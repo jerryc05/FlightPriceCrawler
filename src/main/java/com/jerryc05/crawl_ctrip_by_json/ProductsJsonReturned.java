@@ -2,6 +2,8 @@ package com.jerryc05.crawl_ctrip_by_json;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.List;
+
 public class ProductsJsonReturned {
 
     @JSONField(name = "data")
@@ -13,13 +15,13 @@ public class ProductsJsonReturned {
         private RecommendData recommendData;
 
         @JSONField(name = "routeList")
-        private RouteListItem[] routeList;
+        private List<RouteListItem> routeList;
 
         public void setRecommendData(RecommendData recommendData) {
             this.recommendData = recommendData;
         }
 
-        public void setRouteList(RouteListItem[] routeList) {
+        public void setRouteList(List<RouteListItem> routeList) {
             this.routeList = routeList;
         }
 
@@ -27,7 +29,7 @@ public class ProductsJsonReturned {
             return recommendData;
         }
 
-        public RouteListItem[] getRouteList() {
+        public List<RouteListItem> getRouteList() {
             return routeList;
         }
 
@@ -47,13 +49,13 @@ public class ProductsJsonReturned {
             public class RedirectSingleProduct {
 
                 @JSONField(name = "flights")
-                private FlightsItem[] flights;
+                private List<FlightsItem> flights;
 
-                public FlightsItem[] getFlights() {
+                public List<FlightsItem> getFlights() {
                     return flights;
                 }
 
-                public void setFlights(FlightsItem[] flights) {
+                public void setFlights(List<FlightsItem> flights) {
                     this.flights = flights;
                 }
 
@@ -131,13 +133,13 @@ public class ProductsJsonReturned {
         public class RouteListItem {
 
             @JSONField(name = "legs")
-            private LegsItem[] legs;
+            private List<LegsItem> legs;
 
-            public LegsItem[] getLegs() {
+            public List<LegsItem> getLegs() {
                 return legs;
             }
 
-            public void setLegs(LegsItem[] legs) {
+            public void setLegs(List<LegsItem> legs) {
                 this.legs = legs;
             }
 
@@ -300,6 +302,20 @@ public class ProductsJsonReturned {
                         public void setTerminal(Terminal terminal) {
                             this.terminal = terminal;
                         }
+
+                        public class Terminal {
+
+                            @JSONField(name = "name")
+                            private String name;
+
+                            public String getName() {
+                                return name;
+                            }
+
+                            public void setName(String name) {
+                                this.name = name;
+                            }
+                        }
                     }
 
                     public class ArrivalAirportInfo {
@@ -325,30 +341,19 @@ public class ProductsJsonReturned {
                         public void setTerminal(Terminal terminal) {
                             this.terminal = terminal;
                         }
-                    }
 
-                    public class Terminal {
+                        public class Terminal {
 
-                        @JSONField(name = "name")
-                        private String name;
+                            @JSONField(name = "name")
+                            private String name;
 
-                        @JSONField(name = "shortName")
-                        private String shortName;
+                            public String getName() {
+                                return name;
+                            }
 
-                        public String getName() {
-                            return name;
-                        }
-
-                        public void setName(String name) {
-                            this.name = name;
-                        }
-
-                        public String getShortName() {
-                            return shortName;
-                        }
-
-                        public void setShortName(String shortName) {
-                            this.shortName = shortName;
+                            public void setName(String name) {
+                                this.name = name;
+                            }
                         }
                     }
                 }
