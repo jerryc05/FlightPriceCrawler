@@ -21,12 +21,13 @@ import javax.net.ssl.HttpsURLConnection;
 
 class MyUtils {
 
+    static final String VERSION = "0.1.1";
     static final String ACCEPT = "Accept";
     static final String ACCEPT_ALL = "*/*";
     static final String ACCEPT_ENCODING = "Accept-Encoding";
     static final String GZIP = "gzip";
     static final String USER_AGENT = "User-Agent";
-    static final String MOZILLA = "Mozilla/5.0 (Windows NT 10.0;) Gecko/ Firefox/";
+    static final String MOZILLA = "";
     static final String CONTENT_TYPE = "Content-Type";
     static final String APP_JSON = "application/json";
     static final String CONTENT_LENGTH = "Content-Length";
@@ -101,7 +102,7 @@ class MyUtils {
             if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
                 throw new UnsupportedOperationException(
                         "HTTP " + httpsURLConnection.getResponseCode() + " Error");
-            if (httpsURLConnection.getContentLength() <= 0)
+            if (httpsURLConnection.getContentLength() == 0)
                 throw new UnsupportedOperationException(
                         "Content Length = " + httpsURLConnection.getContentLength());
             InputStream inputStream;
@@ -138,6 +139,7 @@ class MyUtils {
 
             byteArrayOutputStream.close();
             bufferedInputStream.close();
+            inputStream.close();
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
         }

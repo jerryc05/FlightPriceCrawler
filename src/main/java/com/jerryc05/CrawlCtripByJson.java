@@ -97,7 +97,8 @@ class CrawlCtripByJson {
 
             if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
                 throw new UnsupportedOperationException(
-                        "HTTP " + httpsURLConnection.getResponseCode() + " Error");
+                        "HTTP " + httpsURLConnection.getResponseCode() + " Error\n"
+                                + httpsURLConnection.getResponseMessage());
             cookieMap = MyUtils.saveCookies(httpsURLConnection.getHeaderFields(), cookieMap);
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
