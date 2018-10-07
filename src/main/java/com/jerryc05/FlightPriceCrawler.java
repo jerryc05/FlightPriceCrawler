@@ -113,7 +113,6 @@ public class FlightPriceCrawler {
         departureDateField.setBounds(
                 frame.getWidth() / 2, 220, frame.getWidth() / 2 - 50, 25);
         frame.add(departureDateField);
-        logger.info(departureDateField.getText());
 
 
         Label returnDateLabel = new Label("Arrival Date (YYYY-MM-DD):   ");

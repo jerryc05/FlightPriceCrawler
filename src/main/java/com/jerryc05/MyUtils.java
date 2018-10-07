@@ -121,6 +121,10 @@ class MyUtils {
                 }
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            for (final long time = System.currentTimeMillis(); System.currentTimeMillis() - time <= 5 * 1000; ) {
+                if (httpsURLConnection.getContentLength() > 0) break;
+            }
             byte[] bytes = new byte[httpsURLConnection.getContentLength()];
             int length;
             while ((length = bufferedInputStream.read(bytes)) > 0) {

@@ -2,11 +2,11 @@ package com.jerryc05;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.jerryc05.pojo.ctrip.FlightsItem;
 import com.jerryc05.pojo.ctrip.LowestPriceJsonPost;
 import com.jerryc05.pojo.ctrip.LowestPriceJsonReturned;
 import com.jerryc05.pojo.ctrip.ProductsJsonPost;
 import com.jerryc05.pojo.ctrip.ProductsJsonReturned;
-import com.jerryc05.pojo.ctrip.ProductsJsonReturned.Data.RecommendData.RedirectSingleProduct.FlightsItem;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -86,8 +86,8 @@ class CrawlCtripByJson {
                         + departureAirportCode + "-" + arrivalAirportCode + "?date=" + departDate + "%2" + returnDate);
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
             httpsURLConnection.setRequestMethod("GET");
-            httpsURLConnection.setConnectTimeout(10 * 1000);
-            httpsURLConnection.setReadTimeout(10 * 1000);
+            httpsURLConnection.setConnectTimeout(5 * 1000);
+            httpsURLConnection.setReadTimeout(5 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
             httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
@@ -167,8 +167,8 @@ class CrawlCtripByJson {
         HSSFSheet sheet = workbook.createSheet(
                 departureAirportCode + "->" + arrivalAirportCode + "@" + departDate);
         HSSFRow row0 = sheet.createRow(0);
-        FlightsItem recFlight = productsJsonReturned.getData().getRecommendData()
-                .getRedirectSingleProduct().getFlights().get(0);
+        FlightsItem recFlight = productsJsonReturned.getData()
+                .getRecommendData().getRedirectSingleProduct().getFlights().get(0);
         row0.createCell(1).setCellValue(recFlight.getTransportNo());
         row0.createCell(2).setCellValue(recFlight.getDepartureCityName());
         row0.createCell(3).setCellValue(recFlight.getArrivalCityName());
