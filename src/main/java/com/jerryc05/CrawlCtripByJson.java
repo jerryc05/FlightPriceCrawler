@@ -2,18 +2,18 @@ package com.jerryc05;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.jerryc05.crawl_ctrip_by_json.LowestPriceJsonPost;
-import com.jerryc05.crawl_ctrip_by_json.LowestPriceJsonReturned;
-import com.jerryc05.crawl_ctrip_by_json.ProductsJsonPost;
-import com.jerryc05.crawl_ctrip_by_json.ProductsJsonReturned;
-import com.jerryc05.crawl_ctrip_by_json.ProductsJsonReturned.Data.RecommendData.RedirectSingleProduct.FlightsItem;
+import com.jerryc05.pojo.ctrip.LowestPriceJsonPost;
+import com.jerryc05.pojo.ctrip.LowestPriceJsonReturned;
+import com.jerryc05.pojo.ctrip.ProductsJsonPost;
+import com.jerryc05.pojo.ctrip.ProductsJsonReturned;
+import com.jerryc05.pojo.ctrip.ProductsJsonReturned.Data.RecommendData.RedirectSingleProduct.FlightsItem;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFDataFormat;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,7 +34,7 @@ class CrawlCtripByJson {
     private static String departDate;
     private static String returnDate;
     private static Logger logger;
-    private static final XSSFWorkbook workbook = new XSSFWorkbook();
+    private static final HSSFWorkbook workbook = new HSSFWorkbook();
     private static String excelFilePath;
 
     private CrawlCtripByJson() {
@@ -50,7 +50,8 @@ class CrawlCtripByJson {
         CrawlCtripByJson.arrivalAirportCode = arrivalAirportCode;
         CrawlCtripByJson.departDate = departDate;
         CrawlCtripByJson.returnDate = returnDate;
-        excelFilePath = "D:/Ctrip[" + departureAirportCode + " - " + arrivalAirportCode + " @ " + departDate + "].xlsx";
+        excelFilePath = "D:/Ctrip[" + departureAirportCode + " - " + arrivalAirportCode
+                + " @ " + departDate + "].xls";
         if (!initCookie())
             return false;
         else {
@@ -136,6 +137,8 @@ class CrawlCtripByJson {
             productsJsonPost.getAirportParams()[0].setDcity(departureAirportCode);
             productsJsonPost.getAirportParams()[0].setAcity(arrivalAirportCode);
             productsJsonPost.getAirportParams()[0].setDate(departDate);
+            productsJsonPost.setSearchIndex(1);
+
             if (!returnDate.equals("")) {
                 productsJsonPost.setFlightWay("");//todo
             }
@@ -161,9 +164,9 @@ class CrawlCtripByJson {
             MyUtils.closeConnection(httpsURLConnection, logger);
         }
 
-        XSSFSheet sheet = workbook.createSheet(
+        HSSFSheet sheet = workbook.createSheet(
                 departureAirportCode + "->" + arrivalAirportCode + "@" + departDate);
-        XSSFRow row0 = sheet.createRow(0);
+        HSSFRow row0 = sheet.createRow(0);
         FlightsItem recFlight = productsJsonReturned.getData().getRecommendData()
                 .getRedirectSingleProduct().getFlights().get(0);
         row0.createCell(1).setCellValue(recFlight.getTransportNo());
@@ -226,27 +229,27 @@ class CrawlCtripByJson {
             MyUtils.closeConnection(httpsURLConnection, logger);
         }
 
-        XSSFSheet sheet = workbook.createSheet(
+        HSSFSheet sheet = workbook.createSheet(
                 departureAirportCode + "->" + arrivalAirportCode + "@LOWEST");
         if (lowestPriceJsonReturned == null)
             return false;
         if (returnDate.equals("")) {
-            XSSFRow row0 = sheet.createRow(0);
+            HSSFRow row0 = sheet.createRow(0);
             row0.createCell(0).setCellValue("Arrival Date");
             row0.createCell(1).setCellValue("Flight Price");
             int rowNumber = 1;
             for (Map.Entry<String, Integer> entry :
                     lowestPriceJsonReturned.getData().getOneWayPrice()[0].entrySet()) {
-                XSSFRow row = sheet.createRow(rowNumber);
-                XSSFCell cell0 = row.createCell(0);
+                HSSFRow row = sheet.createRow(rowNumber);
+                HSSFCell cell0 = row.createCell(0);
                 String date = entry.getKey();
                 date = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6);
                 cell0.setCellValue(date);
-                XSSFCell cell1 = row.createCell(1);
+                HSSFCell cell1 = row.createCell(1);
                 cell1.setCellValue(entry.getValue());
 
-                XSSFCellStyle cellStyle = workbook.createCellStyle();
-                XSSFDataFormat dataFormat = workbook.createDataFormat();
+                HSSFCellStyle cellStyle = workbook.createCellStyle();
+                HSSFDataFormat dataFormat = workbook.createDataFormat();
                 cellStyle.setDataFormat(dataFormat.getFormat("yyyy\"年\"m\"月\"d\"日\";@"));
                 cell0.setCellStyle(cellStyle);
                 cellStyle.setDataFormat(dataFormat.getFormat("[$¥-zh-CN]#,##0.00"));
@@ -258,9 +261,8 @@ class CrawlCtripByJson {
         } else {
             int rowNumber = 0;
             int colNumber;
-            for (Map.Entry<String, Map<String, Integer>> departureEntry :
-                    lowestPriceJsonReturned.getData().getRoundTripPrice().entrySet()) {
-                XSSFRow row = sheet.createRow(rowNumber);
+            for (Map.Entry<String, Map<String, Integer>> departureEntry : lowestPriceJsonReturned.getData().getRoundTripPrice().entrySet()) {
+                HSSFRow row = sheet.createRow(rowNumber);
                 row.createCell(0).setCellValue(departureEntry.getKey());
                 colNumber = 1;
                 for (Map.Entry<String, Integer> arrivalEntry : departureEntry.getValue().entrySet()) {
@@ -279,7 +281,7 @@ class CrawlCtripByJson {
             workbook.write(out);
         } catch (FileNotFoundException fNF) {
             MyUtils.handleException(fNF, logger);
-            excelFilePath += ".xlsx";
+            excelFilePath += ".xls";
             writeFile();
         } catch (IOException iO) {
             MyUtils.handleException(iO, logger);

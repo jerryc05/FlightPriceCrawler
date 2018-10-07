@@ -1,6 +1,5 @@
 package com.jerryc05;
 
-import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
 
 import java.awt.Desktop;
 import java.io.BufferedInputStream;
@@ -21,7 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 class MyUtils {
 
-    static final String VERSION = "0.1.1";
+    static final String VERSION = "0.1.2";
     static final String ACCEPT = "Accept";
     static final String ACCEPT_ALL = "*/*";
     static final String ACCEPT_ENCODING = "Accept-Encoding";
@@ -117,9 +116,6 @@ class MyUtils {
                     case "deflate":
                         inputStream = new DeflaterInputStream(httpsURLConnection.getInputStream());
                         break;
-                    case "br":
-                        inputStream = new BrotliCompressorInputStream(httpsURLConnection.getInputStream());
-                        break;
                     default:
                         inputStream = httpsURLConnection.getInputStream();
                 }
@@ -134,12 +130,13 @@ class MyUtils {
             for (String encoding : contentTypes)
                 if (encoding.contains("charset=")) {
                     encoding = encoding.trim();
-                    return byteArrayOutputStream.toString(encoding.substring(8));
+                    String json = byteArrayOutputStream.toString(encoding.substring(8));
+                    byteArrayOutputStream.close();
+                    bufferedInputStream.close();
+                    inputStream.close();
+                    return json;
                 }
 
-            byteArrayOutputStream.close();
-            bufferedInputStream.close();
-            inputStream.close();
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
         }

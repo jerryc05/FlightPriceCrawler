@@ -1,37 +1,28 @@
-package com.jerryc05.crawl_ctrip_by_json;
+package com.jerryc05.pojo.ctrip;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
 public class ProductsJsonPost {
 
     @JSONField(name = "flightWay")
-    String flightWay = "Oneway";
-
-    @JSONField(name = "classType")
-    String classType = "ALL";
+    private String flightWay = "Oneway";
 
     @JSONField(name = "searchIndex")
-    int searchIndex = 1;
+    private int searchIndex;
 
     @JSONField(name = "airportParams")
-    AirportParamsItem[] airportParams;
+    private AirportParamsItem[] airportParams;
 
     public class AirportParamsItem {
 
         @JSONField(name = "dcity")
-        String dcity;
+        private String dcity;
 
         @JSONField(name = "acity")
-        String acity;
-
-        @JSONField(name = "dcityname")
-        String dcityname;
-
-        @JSONField(name = "acityname")
-        String acityname;
+        private String acity;
 
         @JSONField(name = "date")
-        String date;
+        private String date;
 
         public String getDcity() {
             return dcity;
@@ -39,14 +30,6 @@ public class ProductsJsonPost {
 
         public String getDate() {
             return date;
-        }
-
-        public String getDcityname() {
-            return dcityname;
-        }
-
-        public String getAcityname() {
-            return acityname;
         }
 
         public String getAcity() {
@@ -59,14 +42,6 @@ public class ProductsJsonPost {
 
         public void setDate(String date) {
             this.date = date;
-        }
-
-        public void setDcityname(String dcityname) {
-            this.dcityname = dcityname;
-        }
-
-        public void setAcityname(String acityname) {
-            this.acityname = acityname;
         }
 
         public void setAcity(String acity) {
@@ -96,9 +71,5 @@ public class ProductsJsonPost {
 
     public void setFlightWay(String flightWay) {
         this.flightWay = flightWay;
-    }
-
-    public void setClassType(String classType) {
-        this.classType = classType;
     }
 }

@@ -1,20 +1,21 @@
-package com.jerryc05.crawl_ctrip_by_json;
+package com.jerryc05.pojo.ctrip;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+@SuppressWarnings("unused")
 public class LowestPriceJsonPost {
 
     @JSONField(name = "flightWay")
-    String flightWay;
+    private String flightWay;
 
     @JSONField(name = "dcity")
-    String dcity;
+    private String dcity;
 
     @JSONField(name = "acity")
-    String acity;
+    private String acity;
 
     @JSONField(name = "army")
-    boolean army = false;
+    private boolean army = false;
 
     public String getDcity() {
         return dcity;

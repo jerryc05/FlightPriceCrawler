@@ -8,6 +8,8 @@ import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,8 +43,13 @@ public class FlightPriceCrawler {
         frame = new Frame("Flight Crawler by @jerryc05");
         frame.setSize(400, 500);
         frame.setResizable(false);
-
         frame.setLayout(null);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                frame.dispose();
+            }
+        });
 
         Label welcomeLabel = new Label("Welcome to Flight Crawler v" + MyUtils.VERSION);
         welcomeLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
@@ -56,7 +63,8 @@ public class FlightPriceCrawler {
         departureCityCodeLabel.setBounds(
                 0, 120, frame.getWidth() / 2, 25);
         frame.add(departureCityCodeLabel);
-        TextField departureCityCodeField = new TextField(null);
+        TextField departureCityCodeField = new TextField();
+        departureCityCodeField.setText("foc");//todo
         departureCityCodeField.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
         departureCityCodeField.addFocusListener(new FocusAdapter() {
             @Override
@@ -74,7 +82,8 @@ public class FlightPriceCrawler {
         arrivalCityCodeLabel.setBounds(
                 0, 170, frame.getWidth() / 2, 25);
         frame.add(arrivalCityCodeLabel);
-        TextField arrivalCityCodeField = new TextField(null);
+        TextField arrivalCityCodeField = new TextField();
+        arrivalCityCodeField.setText("sha");//todo
         arrivalCityCodeField.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
         arrivalCityCodeField.addFocusListener(new FocusAdapter() {
             @Override
@@ -92,8 +101,9 @@ public class FlightPriceCrawler {
         departureDateLabel.setBounds(
                 0, 220, frame.getWidth() / 2, 25);
         frame.add(departureDateLabel);
-        TextField departureDateField = new TextField(null);
+        TextField departureDateField = new TextField();
         departureDateField.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
+        departureDateField.setText("2018-12-21");//todo
         departureDateField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -103,6 +113,7 @@ public class FlightPriceCrawler {
         departureDateField.setBounds(
                 frame.getWidth() / 2, 220, frame.getWidth() / 2 - 50, 25);
         frame.add(departureDateField);
+        logger.info(departureDateField.getText());
 
 
         Label returnDateLabel = new Label("Arrival Date (YYYY-MM-DD):   ");
@@ -110,10 +121,10 @@ public class FlightPriceCrawler {
         returnDateLabel.setBounds(
                 0, 270, frame.getWidth() / 2, 25);
         frame.add(returnDateLabel);
-        TextField returnDateField = new TextField(null);
+        TextField returnDateField = new TextField();
         returnDateField.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
         returnDateField.setEnabled(false);//todo
-        returnDateField.setText("Not yet available ......");
+        returnDateField.setText("Not yet available ......");//todo
         returnDateField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -182,6 +193,7 @@ public class FlightPriceCrawler {
                                      final boolean qunar,
                                      final boolean ly,
                                      final boolean zhixing) {
+
         CompletableFuture<Boolean> cfCtrip = null;
         if (ctrip) cfCtrip = CompletableFuture.supplyAsync(() ->
                 CrawlCtripByJson.crawlCtripByJson(
@@ -206,5 +218,4 @@ public class FlightPriceCrawler {
             MyUtils.handleException(e, logger);
         }
     }
-
 }

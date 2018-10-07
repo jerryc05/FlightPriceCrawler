@@ -1,4 +1,4 @@
-package com.jerryc05.crawl_ctrip_by_json;
+package com.jerryc05.pojo.ctrip;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
