@@ -18,7 +18,7 @@ A clear and concise description of what the bug is, and label it as `bug`./请�
 
 ###  2. Reproduce/复现错误
 Steps to reproduce the behavior:/请描述错误是如何出现的：
-- For convenience, screenshots are encouraged./为方便起见，建议上传截图。
+- For convenience, screenshots are encouraged./为方便起见，可以上传截图。
 
 
 
