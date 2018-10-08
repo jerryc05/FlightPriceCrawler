@@ -25,6 +25,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -42,11 +46,11 @@ class CrawlCtripByJson {
     private static Logger logger;
     private static final HSSFWorkbook workbook = new HSSFWorkbook();
     private static String excelFilePath;
-    private static HSSFDataFormat dataFormat = workbook.createDataFormat();
-    private static HSSFCellStyle dateStyle = workbook.createCellStyle();
-    private static HSSFCellStyle currencyStyle = workbook.createCellStyle();
-    private static HSSFCellStyle centeredStyle = workbook.createCellStyle();
-    private static HSSFCellStyle wrapRow = workbook.createCellStyle();
+    private static final HSSFDataFormat dataFormat = workbook.createDataFormat();
+    private static final HSSFCellStyle dateStyle = workbook.createCellStyle();
+    private static final HSSFCellStyle currencyStyle = workbook.createCellStyle();
+    private static final HSSFCellStyle centeredStyle = workbook.createCellStyle();
+    private static final HSSFCellStyle wrapRow = workbook.createCellStyle();
 
 
     private CrawlCtripByJson() {
@@ -223,6 +227,7 @@ class CrawlCtripByJson {
         r2Cell.setCellStyle(centeredStyle);
 
         List<RouteListItem> routeLists = productsJsonReturned.getData().getRouteList();
+        Collections.sort(routeLists);
         LegsItem legs;
         int row = 4;
         for (RouteListItem routeList : routeLists) {
@@ -323,8 +328,17 @@ class CrawlCtripByJson {
             row0.createCell(0).setCellValue("Arrival Date");
             row0.createCell(1).setCellValue("Lowest Price");
             int rowNumber = 1;
+
+            Map<String, Integer> oneWayPrice = lowestPriceJsonReturned.getData().getOneWayPrice()[0];
+            List<Map.Entry<String, Integer>> list = new LinkedList<>(oneWayPrice.entrySet());
+            list.sort(Comparator.comparing(o -> (o.getValue())));
+            oneWayPrice = new LinkedHashMap<>();
+            for (Map.Entry<String, Integer> entry : list) {
+                oneWayPrice.put(entry.getKey(), entry.getValue());
+            }
+
             for (Map.Entry<String, Integer> entry :
-                    lowestPriceJsonReturned.getData().getOneWayPrice()[0].entrySet()) {
+                    oneWayPrice.entrySet()) {
                 HSSFRow row = sheet.createRow(rowNumber);
                 HSSFCell cell0 = row.createCell(0);
                 String date = entry.getKey();
