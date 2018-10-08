@@ -31,6 +31,7 @@ This app is compiled in **Java 11** but targeted at **Java 8**, so all you need 
 
 - Mac
 > A simpler way of doing this is to locate the app file in Finder and **Ctrl-Click** it, and select **Open** from the resultant menu. 
+
 > **NOTE THAT** an exception might be created for opening it normally (i.e. by **double-clicking**).
 
 - Linux
