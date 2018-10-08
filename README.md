@@ -12,7 +12,7 @@ Looking for the latest release? It's [here](https://github.com/jerryc05/FlightPr
 ---
 ## Development Status
 
-Supported: [**Ctrip**](http://ctrip.com)***(One-way only)***.
+Supported: [**Ctrip**](http://ctrip.com) ***(One-way only)***.
 
 Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://www.qunar.com),  [**Ly**](https://www.ly.com/),  [**Suanya**](http://www.suanya.cn/).
 
