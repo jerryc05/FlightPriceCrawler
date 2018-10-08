@@ -13,6 +13,7 @@ Looking for the latest release? It's [here](https://github.com/jerryc05/FlightPr
 ## Development Status
 
 Supported: [**Ctrip**](http://ctrip.com).
+
 Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://www.qunar.com),  [**Ly**](https://www.ly.com/),  [**Suanya**](http://www.suanya.cn/).
 
 
@@ -21,7 +22,7 @@ Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://ww
 This app is compiled in **Java 11** but targeted at **Java 8**, so all you need are:
 
 - A computer with an OS that can run **Java**.
-- [Java Runtime Environment 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html).
+- [Java Runtime Environment 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html) (chances are that you have **Java** installed already).
 
 ## Getting Started
 
