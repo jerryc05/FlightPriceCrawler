@@ -21,7 +21,7 @@ public class FlightPriceCrawler {
     private static String departDate;
     private static String returnDate;
     private static Logger logger;
-    private static Label error = new Label();
+    private static Label infoLabel = new Label();
     private static Frame frame;
 
     public static void main(String[] args) {
@@ -40,8 +40,10 @@ public class FlightPriceCrawler {
 
     private static void getInput() {
 
+        final int checkboxWidth = 80;
+
         frame = new Frame("Flight Crawler by @jerryc05");
-        frame.setSize(400, 500);
+        frame.setSize(500, 500);
         frame.setResizable(false);
         frame.setLayout(null);
         frame.addWindowListener(new WindowAdapter() {
@@ -136,33 +138,34 @@ public class FlightPriceCrawler {
 
 
         Checkbox ctrip = new Checkbox("Ctrip");
-        ctrip.setBounds(30, 310, 50, 50);
+        ctrip.setBounds(30, 310, checkboxWidth, 50);
         frame.add(ctrip);
 
         Checkbox fliggy = new Checkbox("Fliggy");
         fliggy.setEnabled(false);
-        fliggy.setBounds(30 + (frame.getWidth() - 60) / 5, 310, 50, 50);
+        fliggy.setBounds(30 + (frame.getWidth() - 60) / 5, 310, checkboxWidth, 50);
         frame.add(fliggy);
 
         Checkbox qunar = new Checkbox("Qunar");
         qunar.setEnabled(false);
-        qunar.setBounds(30 + (frame.getWidth() - 60) / 5 * 2, 310, 50, 50);
+        qunar.setBounds(30 + (frame.getWidth() - 60) / 5 * 2, 310, checkboxWidth, 50);
         frame.add(qunar);
 
         Checkbox ly = new Checkbox("Ly");
         ly.setEnabled(false);
-        ly.setBounds(30 + (frame.getWidth() - 60) / 5 * 3, 310, 50, 50);
+        ly.setBounds(30 + (frame.getWidth() - 60) / 5 * 3, 310, checkboxWidth, 50);
         frame.add(ly);
 
-        Checkbox zhixing = new Checkbox("ZhiXing");
-        zhixing.setEnabled(false);
-        zhixing.setBounds(30 + (frame.getWidth() - 60) / 5 * 4, 310, 50, 50);
-        frame.add(zhixing);
+        Checkbox suanYa = new Checkbox("SuanYa");
+        suanYa.setEnabled(false);
+        suanYa.setBounds(30 + (frame.getWidth() - 60) / 5 * 4, 310, checkboxWidth, 50);
+        frame.add(suanYa);
 
-        error.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-        error.setBounds(50, 370, frame.getWidth() - 100, 30);
-        error.setAlignment(Label.CENTER);
-        frame.add(error);
+        infoLabel.setText("...Select crawling engines...");
+        infoLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+        infoLabel.setBounds(50, 370, frame.getWidth() - 100, 30);
+        infoLabel.setAlignment(Label.CENTER);
+        frame.add(infoLabel);
 
         Button button = new Button("Crawl it!");
         button.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
@@ -177,13 +180,13 @@ public class FlightPriceCrawler {
             FlightPriceCrawler.departDate = departureDateField.getText().toLowerCase();
             FlightPriceCrawler.returnDate = "";//todo returnDateField.getText().toLowerCase();
             if (ctrip.getState() || fliggy.getState() ||
-                    qunar.getState() || ly.getState() || zhixing.getState()) {
-                error.setText("Processing, please wait...");
+                    qunar.getState() || ly.getState() || suanYa.getState()) {
+                infoLabel.setText("Processing, please wait...");
                 button.setEnabled(false);
                 FlightPriceCrawler.processInput(ctrip.getState(), fliggy.getState(),
-                        qunar.getState(), ly.getState(), zhixing.getState());
+                        qunar.getState(), ly.getState(), suanYa.getState());
             } else {
-                error.setText("Please check one source to crawl!");
+                infoLabel.setText("Please check one source to crawl!");
             }
         });
     }
@@ -192,7 +195,7 @@ public class FlightPriceCrawler {
                                      final boolean fliggy,
                                      final boolean qunar,
                                      final boolean ly,
-                                     final boolean zhixing) {
+                                     final boolean suanYa) {
 
         CompletableFuture<Boolean> cfCtrip = null;
         if (ctrip) cfCtrip = CompletableFuture.supplyAsync(() ->
@@ -205,12 +208,12 @@ public class FlightPriceCrawler {
         }
         if (ly) {
         }
-        if (zhixing) {
+        if (suanYa) {
         }
         try {
             if (cfCtrip != null && cfCtrip.get())
                 logger.info(() -> "finished!");
-            error.setText("Crawing finished!");
+            infoLabel.setText("Crawing finished!");
             Thread.sleep(2000);
             frame.dispose();
         } catch (Exception e) {
