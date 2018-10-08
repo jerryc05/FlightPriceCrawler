@@ -3,10 +3,12 @@ package com.jerryc05;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.jerryc05.pojo.ctrip.FlightsItem;
+import com.jerryc05.pojo.ctrip.LegsItem;
 import com.jerryc05.pojo.ctrip.LowestPriceJsonPost;
 import com.jerryc05.pojo.ctrip.LowestPriceJsonReturned;
 import com.jerryc05.pojo.ctrip.ProductsJsonPost;
 import com.jerryc05.pojo.ctrip.ProductsJsonReturned;
+import com.jerryc05.pojo.ctrip.RouteListItem;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -14,6 +16,8 @@ import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,10 +25,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.swing.filechooser.FileSystemView;
 
 class CrawlCtripByJson {
 
@@ -36,6 +42,11 @@ class CrawlCtripByJson {
     private static Logger logger;
     private static final HSSFWorkbook workbook = new HSSFWorkbook();
     private static String excelFilePath;
+    private static HSSFDataFormat dataFormat = workbook.createDataFormat();
+    private static HSSFCellStyle dateStyle = workbook.createCellStyle();
+    private static HSSFCellStyle currencyStyle = workbook.createCellStyle();
+    private static HSSFCellStyle centeredStyle = workbook.createCellStyle();
+
 
     private CrawlCtripByJson() {
     }
@@ -50,8 +61,13 @@ class CrawlCtripByJson {
         CrawlCtripByJson.arrivalAirportCode = arrivalAirportCode;
         CrawlCtripByJson.departDate = departDate;
         CrawlCtripByJson.returnDate = returnDate;
-        excelFilePath = "D:/Ctrip[" + departureAirportCode + " - " + arrivalAirportCode
+        excelFilePath = FileSystemView.getFileSystemView().getHomeDirectory()
+                + "\\Ctrip[" + departureAirportCode + " - " + arrivalAirportCode
                 + " @ " + departDate + "].xls";
+        dateStyle.setDataFormat(dataFormat.getFormat("m\"月\"d\"日\";@"));
+        currencyStyle.setDataFormat(dataFormat.getFormat("[$¥-zh-CN]#,##0"));
+        centeredStyle.setAlignment(HorizontalAlignment.CENTER);
+
         if (!initCookie())
             return false;
         else {
@@ -166,15 +182,80 @@ class CrawlCtripByJson {
 
         HSSFSheet sheet = workbook.createSheet(
                 departureAirportCode + "->" + arrivalAirportCode + "@" + departDate);
+
         HSSFRow row0 = sheet.createRow(0);
+        HSSFCell r0Cell = row0.createCell(0);
+        r0Cell.setCellValue("Recommended Nearby Flights:");
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 7));
+        r0Cell.setCellStyle(centeredStyle);
+
+
+        HSSFRow row1 = sheet.createRow(1);
         FlightsItem recFlight = productsJsonReturned.getData()
                 .getRecommendData().getRedirectSingleProduct().getFlights().get(0);
-        row0.createCell(1).setCellValue(recFlight.getTransportNo());
-        row0.createCell(2).setCellValue(recFlight.getDepartureCityName());
-        row0.createCell(3).setCellValue(recFlight.getArrivalCityName());
-        row0.createCell(4).setCellValue(recFlight.getDepartureTime());
-        row0.createCell(5).setCellValue(recFlight.getArrivalTime());
-        row0.createCell(6).setCellValue(recFlight.getPrice());
+        HSSFCell hssfCell;
+
+        row1.createCell(0).setCellValue("N/A");
+        row1.createCell(1).setCellValue(recFlight.getTransportNo());
+        row1.createCell(2).setCellValue(recFlight.getDepartureCityName());
+        row1.createCell(3).setCellValue(recFlight.getArrivalCityName());
+
+        hssfCell = row1.createCell(4);
+        hssfCell.setCellValue(recFlight.getDepartureTime().substring(11, 16));
+        hssfCell.setCellStyle(centeredStyle);
+        hssfCell = row1.createCell(5);
+        hssfCell.setCellValue(recFlight.getArrivalTime().substring(11, 16));
+        hssfCell.setCellStyle(centeredStyle);
+
+        hssfCell = row1.createCell(6);
+        hssfCell.setCellValue(recFlight.getPrice());
+        hssfCell.setCellStyle(currencyStyle);
+        row1.createCell(7).setCellValue("N/A");
+
+        HSSFRow row2 = sheet.createRow(3);
+        HSSFCell r2Cell = row2.createCell(0);
+        r2Cell.setCellValue("Flights from " + departureAirportCode.toUpperCase()
+                + " to " + arrivalAirportCode + " @ " + departDate);
+        sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 7));
+        r2Cell.setCellStyle(centeredStyle);
+
+        List<RouteListItem> routeLists = productsJsonReturned.getData().getRouteList();
+        LegsItem legs;
+        int row = 4;
+        for (RouteListItem routeList : routeLists) {
+            legs = routeList.getLegs().get(0);
+            HSSFRow hssfRow;
+            hssfRow = sheet.createRow(row);
+            hssfRow.createCell(0).setCellValue(legs.getFlight().getAirlineName());
+            hssfRow.createCell(1).setCellValue(legs.getFlight().getFlightNumber());
+            hssfRow.createCell(2).setCellValue(legs.getFlight().getDepartureAirportInfo().getAirportName()
+                    + legs.getFlight().getDepartureAirportInfo().getTerminal().getName());
+            hssfRow.createCell(3).setCellValue(legs.getFlight().getArrivalAirportInfo().getAirportName()
+                    + legs.getFlight().getArrivalAirportInfo().getTerminal().getName());
+
+            hssfCell = hssfRow.createCell(4);
+            hssfCell.setCellValue(legs.getFlight().getDepartureDate().substring(11, 16));
+            hssfCell.setCellStyle(centeredStyle);
+            hssfCell = hssfRow.createCell(5);
+            hssfCell.setCellValue(legs.getFlight().getArrivalDate().substring(11, 16));
+            hssfCell.setCellStyle(centeredStyle);
+
+            hssfCell = hssfRow.createCell(6);
+            hssfCell.setCellValue(legs.getCharacteristic().getLowestPrice());
+            hssfCell.setCellStyle(currencyStyle);
+            hssfRow.createCell(7).setCellValue(legs.getFlight().getCraftTypeName()
+                    + "(" + legs.getFlight().getCraftTypeCode() + ")"
+                    + "（" + legs.getFlight().getCraftTypeKindDisplayName() + "）");
+            row++;
+        }
+        sheet.setColumnWidth(0, 11 * 256);
+        sheet.setColumnWidth(1, 10 * 256);
+        sheet.setColumnWidth(2, 8 * 2 * 256);
+        sheet.setColumnWidth(3, 8 * 2 * 256);
+        sheet.setColumnWidth(4, 7 * 256);
+        sheet.setColumnWidth(5, 7 * 256);
+        sheet.setColumnWidth(6, 8 * 256);
+        sheet.autoSizeColumn(7);
         return true;
     }
 
@@ -236,7 +317,7 @@ class CrawlCtripByJson {
         if (returnDate.equals("")) {
             HSSFRow row0 = sheet.createRow(0);
             row0.createCell(0).setCellValue("Arrival Date");
-            row0.createCell(1).setCellValue("Flight Price");
+            row0.createCell(1).setCellValue("Lowest Price");
             int rowNumber = 1;
             for (Map.Entry<String, Integer> entry :
                     lowestPriceJsonReturned.getData().getOneWayPrice()[0].entrySet()) {
@@ -248,25 +329,24 @@ class CrawlCtripByJson {
                 HSSFCell cell1 = row.createCell(1);
                 cell1.setCellValue(entry.getValue());
 
-                HSSFCellStyle cellStyle = workbook.createCellStyle();
-                HSSFDataFormat dataFormat = workbook.createDataFormat();
-                cellStyle.setDataFormat(dataFormat.getFormat("yyyy\"年\"m\"月\"d\"日\";@"));
-                cell0.setCellStyle(cellStyle);
-                cellStyle.setDataFormat(dataFormat.getFormat("[$¥-zh-CN]#,##0.00"));
-                cell1.setCellStyle(cellStyle);
+                cell0.setCellStyle(dateStyle);
+                cell1.setCellStyle(currencyStyle);
                 rowNumber++;
             }
             sheet.autoSizeColumn(0);
-            sheet.setColumnWidth(1, 10 * 256);
+            sheet.setColumnWidth(1, 13 * 256);
         } else {
             int rowNumber = 0;
             int colNumber;
-            for (Map.Entry<String, Map<String, Integer>> departureEntry : lowestPriceJsonReturned.getData().getRoundTripPrice().entrySet()) {
+            for (Map.Entry<String, Map<String, Integer>> departureEntry :
+                    lowestPriceJsonReturned.getData().getRoundTripPrice().entrySet()) {
                 HSSFRow row = sheet.createRow(rowNumber);
                 row.createCell(0).setCellValue(departureEntry.getKey());
                 colNumber = 1;
-                for (Map.Entry<String, Integer> arrivalEntry : departureEntry.getValue().entrySet()) {
-                    row.createCell(colNumber).setCellValue(arrivalEntry.getKey() + "=" + arrivalEntry.getValue());
+                for (Map.Entry<String, Integer> arrivalEntry :
+                        departureEntry.getValue().entrySet()) {
+                    row.createCell(colNumber).setCellValue(
+                            arrivalEntry.getKey() + "=" + arrivalEntry.getValue());
                     colNumber++;
                 }
                 rowNumber++;

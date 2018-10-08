@@ -20,7 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 class MyUtils {
 
-    static final String VERSION = "0.1.2";
+    static final String VERSION = "0.1.3";
     static final String ACCEPT = "Accept";
     static final String ACCEPT_ALL = "*/*";
     static final String ACCEPT_ENCODING = "Accept-Encoding";

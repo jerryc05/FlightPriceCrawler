@@ -179,6 +179,7 @@ public class FlightPriceCrawler {
             if (ctrip.getState() || fliggy.getState() ||
                     qunar.getState() || ly.getState() || zhixing.getState()) {
                 error.setText("Processing, please wait...");
+                button.setEnabled(false);
                 FlightPriceCrawler.processInput(ctrip.getState(), fliggy.getState(),
                         qunar.getState(), ly.getState(), zhixing.getState());
             } else {
