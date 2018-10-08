@@ -2,10 +2,10 @@ package com.jerryc05;
 
 
 import java.awt.Desktop;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
@@ -119,28 +119,23 @@ class MyUtils {
                     default:
                         inputStream = httpsURLConnection.getInputStream();
                 }
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            for (final long time = System.currentTimeMillis(); System.currentTimeMillis() - time <= 5 * 1000; ) {
-                if (httpsURLConnection.getContentLength() > 0) break;
-            }
-            byte[] bytes = new byte[httpsURLConnection.getContentLength()];
-            int length;
-            while ((length = bufferedInputStream.read(bytes)) > 0) {
-                byteArrayOutputStream.write(bytes, 0, length);
-            }
             String[] contentTypes = httpsURLConnection.getContentType().split(";");
             for (String encoding : contentTypes)
                 if (encoding.contains("charset=")) {
                     encoding = encoding.trim();
-                    String json = byteArrayOutputStream.toString(encoding.substring(8));
-                    byteArrayOutputStream.close();
-                    bufferedInputStream.close();
+                    BufferedReader bufferedReader = new BufferedReader(
+                            new InputStreamReader(inputStream, encoding.substring(8)));
+                    String jsonReturned;
+                    String json = null;
+                    while ((jsonReturned = bufferedReader.readLine()) != null) {
+                        json = jsonReturned;
+                        logger.info(jsonReturned);
+                    }
+                    bufferedReader.close();
                     inputStream.close();
                     return json;
                 }
-
         } catch (Exception e) {
             MyUtils.handleException(e, logger);
         }
