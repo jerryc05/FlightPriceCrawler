@@ -130,7 +130,6 @@ class MyUtils {
                     String json = null;
                     while ((jsonReturned = bufferedReader.readLine()) != null) {
                         json = jsonReturned;
-                        logger.info(jsonReturned);
                     }
                     bufferedReader.close();
                     inputStream.close();
@@ -140,5 +139,17 @@ class MyUtils {
             MyUtils.handleException(e, logger);
         }
         return null;
+    }
+
+    static String airportCodeToCityCode(String airportCode) {
+        switch (airportCode) {
+            case "nay":
+            case "pek":
+                return "bjs";
+            case "pvg":
+                return "sha";
+            default:
+                return airportCode;
+        }
     }
 }

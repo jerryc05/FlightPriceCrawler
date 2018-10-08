@@ -64,7 +64,7 @@ public class FlightPriceCrawler {
                 0, 120, frame.getWidth() / 2, 25);
         frame.add(departureCityCodeLabel);
         TextField departureCityCodeField = new TextField();
-        departureCityCodeField.setText("foc");//todo
+        departureCityCodeField.setText("pek");//todo
         departureCityCodeField.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
         departureCityCodeField.addFocusListener(new FocusAdapter() {
             @Override
@@ -172,10 +172,10 @@ public class FlightPriceCrawler {
         frame.setVisible(true);
 
         button.addActionListener(e -> {
-            FlightPriceCrawler.departureAirportCode = departureCityCodeField.getText();
-            FlightPriceCrawler.arrivalAirportCode = arrivalCityCodeField.getText();
-            FlightPriceCrawler.departDate = departureDateField.getText();
-            FlightPriceCrawler.returnDate = "";//todo returnDateField.getText();
+            FlightPriceCrawler.departureAirportCode = departureCityCodeField.getText().toLowerCase();
+            FlightPriceCrawler.arrivalAirportCode = arrivalCityCodeField.getText().toLowerCase();
+            FlightPriceCrawler.departDate = departureDateField.getText().toLowerCase();
+            FlightPriceCrawler.returnDate = "";//todo returnDateField.getText().toLowerCase();
             if (ctrip.getState() || fliggy.getState() ||
                     qunar.getState() || ly.getState() || zhixing.getState()) {
                 error.setText("Processing, please wait...");
@@ -197,8 +197,7 @@ public class FlightPriceCrawler {
         CompletableFuture<Boolean> cfCtrip = null;
         if (ctrip) cfCtrip = CompletableFuture.supplyAsync(() ->
                 CrawlCtripByJson.crawlCtripByJson(
-                        departureAirportCode.toUpperCase(),
-                        arrivalAirportCode.toUpperCase(),
+                        departureAirportCode, arrivalAirportCode,
                         departDate, returnDate));
         if (fliggy) {
         }

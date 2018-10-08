@@ -46,6 +46,7 @@ class CrawlCtripByJson {
     private static HSSFCellStyle dateStyle = workbook.createCellStyle();
     private static HSSFCellStyle currencyStyle = workbook.createCellStyle();
     private static HSSFCellStyle centeredStyle = workbook.createCellStyle();
+    private static HSSFCellStyle wrapRow = workbook.createCellStyle();
 
 
     private CrawlCtripByJson() {
@@ -67,6 +68,7 @@ class CrawlCtripByJson {
         dateStyle.setDataFormat(dataFormat.getFormat("m\"月\"d\"日\";@"));
         currencyStyle.setDataFormat(dataFormat.getFormat("[$¥-zh-CN]#,##0"));
         centeredStyle.setAlignment(HorizontalAlignment.CENTER);
+        wrapRow.setWrapText(true);
 
         if (!initCookie())
             return false;
@@ -188,7 +190,7 @@ class CrawlCtripByJson {
         r0Cell.setCellValue("Recommended Nearby Flights:");
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 7));
         r0Cell.setCellStyle(centeredStyle);
-
+        row0.setRowStyle(wrapRow);
 
         HSSFRow row1 = sheet.createRow(1);
         FlightsItem recFlight = productsJsonReturned.getData()
@@ -199,6 +201,7 @@ class CrawlCtripByJson {
         row1.createCell(1).setCellValue(recFlight.getTransportNo());
         row1.createCell(2).setCellValue(recFlight.getDepartureCityName());
         row1.createCell(3).setCellValue(recFlight.getArrivalCityName());
+        row1.setRowStyle(wrapRow);
 
         hssfCell = row1.createCell(4);
         hssfCell.setCellValue(recFlight.getDepartureTime().substring(11, 16));
@@ -215,7 +218,7 @@ class CrawlCtripByJson {
         HSSFRow row2 = sheet.createRow(3);
         HSSFCell r2Cell = row2.createCell(0);
         r2Cell.setCellValue("Flights from " + departureAirportCode.toUpperCase()
-                + " to " + arrivalAirportCode + " @ " + departDate);
+                + " to " + arrivalAirportCode.toUpperCase() + " @ " + departDate);
         sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 7));
         r2Cell.setCellStyle(centeredStyle);
 
@@ -246,6 +249,7 @@ class CrawlCtripByJson {
             hssfRow.createCell(7).setCellValue(legs.getFlight().getCraftTypeName()
                     + "(" + legs.getFlight().getCraftTypeCode() + ")"
                     + "（" + legs.getFlight().getCraftTypeKindDisplayName() + "）");
+            hssfRow.setRowStyle(wrapRow);
             row++;
         }
         sheet.setColumnWidth(0, 11 * 256);
@@ -281,8 +285,8 @@ class CrawlCtripByJson {
             httpsURLConnection = MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
             LowestPriceJsonPost lowestPriceJsonPost = new LowestPriceJsonPost();
-            lowestPriceJsonPost.setDcity(departureAirportCode);
-            lowestPriceJsonPost.setAcity(arrivalAirportCode);
+            lowestPriceJsonPost.setDcity(MyUtils.airportCodeToCityCode(departureAirportCode));
+            lowestPriceJsonPost.setAcity(MyUtils.airportCodeToCityCode(arrivalAirportCode));
             if (returnDate.equals(""))
                 lowestPriceJsonPost.setFlightWay("Oneway");
             else
