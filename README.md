@@ -41,4 +41,4 @@ This app is compiled in **Java 11** but targeted at **Java 8**, and these are al
 
 Found a bug or want a new feature? Feel free to submit [a new issue](https://github.com/jerryc05/FlightPriceCrawler/issues/new/choose) in Github!
 
-> Found a bug but did not know what the bug is? Check out the instruction in [`Bug report` issue template](https://github.com/jerryc05/FlightPriceCrawler/issues/new?template=bug-report-----.md)!
+> Found a bug but did not know what the bug is? Check out the instruction in [`Bug report` issue template](https://github.com/jerryc05/FlightPriceCrawler/issues/new?template=bug-report-----.md) and submit an issue right away!
