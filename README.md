@@ -1,8 +1,8 @@
 # [Flight Price Crawler](https://github.com/jerryc05/FlightPriceCrawler)
 
-A self-developed fast crawling Java app targeting at best performance and smallest size.
+A self-developed flight prices crawling Java app targeting at best performance and smallest size.
 
-Looking for the latest release? It's [here](https://github.com/jerryc05/FlightPriceCrawler/releases), Check it out!
+Looking for the latest release? It's [here](https://github.com/jerryc05/FlightPriceCrawler/releases), check it out!
 
 - [Development Status](#development-status)
 - [Requirements](#requirements)
@@ -12,17 +12,17 @@ Looking for the latest release? It's [here](https://github.com/jerryc05/FlightPr
 ---
 ## Development Status
 
-Supported: [**Ctrip**](http://ctrip.com).
+Supported: [**Ctrip**](http://ctrip.com)***(One-way only)***.
 
 Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://www.qunar.com),  [**Ly**](https://www.ly.com/),  [**Suanya**](http://www.suanya.cn/).
 
 
 ## Requirements
 
-This app is compiled in **Java 11** but targeted at **Java 8**, so all you need are:
+This app is compiled in **Java 11** but targeted at **Java 8**, and these are all you will need:
 
-- A computer with an OS that can run **Java**.
-- [Java Runtime Environment 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html) (chances are that you have **Java** installed already).
+- A computer that can run **Java**.
+- [Java Runtime Environment 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html) (chances are that you might have **Java** installed already).
 
 ## Getting Started
 
@@ -34,9 +34,11 @@ This app is compiled in **Java 11** but targeted at **Java 8**, so all you need 
 
 > **NOTE THAT** an exception might be created for opening it normally (i.e. by **double-clicking**).
 
-- Linux
+- Linux 
 >Unknown, not tested.
 
 ## Contributing
 
 Found a bug or want a new feature? Feel free to submit [a new issue](https://github.com/jerryc05/FlightPriceCrawler/issues/new/choose) in Github!
+
+> Found a bug but did not know what the bug is? Check out the instruction in [`Bug report` issue template](https://github.com/jerryc05/FlightPriceCrawler/issues/new?template=bug-report-----.md)!
