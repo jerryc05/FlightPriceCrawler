@@ -13,9 +13,6 @@ about: Suggest an idea for this project/给这个项目提个建议
 ### Is your feature request related to a problem?/您的新功能请求是否与错误相关?
 If yes, please label this issue a `bug`. If not, label it as `enhancement`./若是，请给这个任务打上`bug`标签。若不是，请打上`enhancement`标签。
 
-
-
-
 ### Describe the new feature you expect/描述您期望的新功能
 A clear and concise description of what you want to happen./请清晰而简明地描述你想要的新功能。
 
