@@ -2,7 +2,7 @@
 
 A self-developed flight prices crawling Java app targeting at best performance and smallest size.
 
-Looking for the latest release? It's [here](https://github.com/jerryc05/FlightPriceCrawler/releases), check it out!
+Looking for the latest release? Click [here to go to the release page](https://github.com/jerryc05/FlightPriceCrawler/releases)!
 
 - [Development Status](#development-status)
 - [Requirements](#requirements)
@@ -19,23 +19,23 @@ Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://ww
 
 ## Requirements
 
-This app is compiled in **Java 11** but targeted at **Java 8**, and these are all you will need:
+This app is compiled in **Java 11** but targeted at **Java 8**, so these are all you will need:
 
 - A computer that can run **Java**.
 - [Java Runtime Environment 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html) (chances are that you might have **Java** installed already).
 
 ## Getting Started
 
-- Windows
+- I'm using Windows
 > You are completely fine. Just double-click the jar file and you are all set.
 
-- Mac
+- I'm using Mac
 > A simpler way of doing this is to locate the app file in Finder and **Ctrl-Click** it, and select **Open** from the resultant menu. 
 
 > **NOTE THAT** an exception might be created for opening it normally (i.e. by **double-clicking**).
 
-- Linux 
->Unknown, not tested.
+- I'm using Linux 
+> Unknown, it has never been tested.
 
 ## Contributing
 
