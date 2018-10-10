@@ -33,7 +33,7 @@ A clear and concise description of what you expected to happen./请清晰而简�
 If applicable, please follow these steps to help me locate the bug./如果可以的话，请按照以下步骤帮助我找到错误。
 1. Open Command Prompt [Windows] or Terminal {Mac].
 2. Execute `java -jar ${path} -log` after replacing `${path}` with the path of the `.jar` file.
-> For more detailed debugging output, try using `--log-level=info` instead of `-log`.
+> For more detailed debugging output, try using `-verbose` instead of `-log`.
 4. Reproduce the bug.
 5. If errors are logged in the window, copy and paste them here or take a screenshot and upload it as an attachment.
 
