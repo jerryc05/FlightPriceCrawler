@@ -21,19 +21,24 @@ public class FlightPriceCrawler {
     private static String departDate;
     private static String returnDate;
     private static Logger logger;
-    private static Label infoLabel = new Label();
+    private static final Label infoLabel = new Label();
     private static Frame frame;
 
     public static void main(String[] args) {
 
         logger = Logger.getLogger(FlightPriceCrawler.class.getName());
         logger.setLevel(Level.OFF);
-        for (String arg : args) {
-            if (arg.equals("-log"))
-                logger.setLevel(Level.WARNING);
-            if (arg.equals("--log-level=info"))
-                logger.setLevel(Level.INFO);
-        }
+        for (String arg : args)
+            switch (arg) {
+                case "-log":
+                    logger.setLevel(Level.WARNING);
+                    break;
+                case "-verbose":
+                    logger.setLevel(Level.INFO);
+                    break;
+                default:
+                    break;
+            }
 
         getInput();
     }
@@ -53,7 +58,7 @@ public class FlightPriceCrawler {
             }
         });
 
-        Label welcomeLabel = new Label("Welcome to Flight Crawler v" + MyUtils.VERSION);
+        Label welcomeLabel = new Label("Welcome to Domestic Flights Crawler v" + MyUtils.VERSION);
         welcomeLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
         welcomeLabel.setAlignment(Label.CENTER);
         welcomeLabel.setBounds(0, 50, frame.getWidth(), 50);
@@ -65,17 +70,23 @@ public class FlightPriceCrawler {
         departureCityCodeLabel.setBounds(
                 0, 120, frame.getWidth() / 2, 25);
         frame.add(departureCityCodeLabel);
+
+        Label departureCityCodeValidLabel = new Label();
+        departureCityCodeValidLabel.setBounds(
+                frame.getWidth() / 2 + 100, 120, 50, 25);
+        frame.add(departureCityCodeValidLabel);
+
         TextField departureCityCodeField = new TextField();
         departureCityCodeField.setText("pek");//todo
         departureCityCodeField.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
         departureCityCodeField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                departureCityCodeField.setText(departureCityCodeField.getText().trim());
+                MyUtils.validateCode(departureCityCodeField);
             }
         });
         departureCityCodeField.setBounds(
-                frame.getWidth() / 2, 120, frame.getWidth() / 2 - 50, 25);
+                frame.getWidth() / 2, 120, 50, 25);
         frame.add(departureCityCodeField);
 
 
@@ -84,17 +95,23 @@ public class FlightPriceCrawler {
         arrivalCityCodeLabel.setBounds(
                 0, 170, frame.getWidth() / 2, 25);
         frame.add(arrivalCityCodeLabel);
+
+        Label arrivalCityCodeValidLabel = new Label();
+        arrivalCityCodeValidLabel.setBounds(
+                frame.getWidth() / 2 + 100, 170, 50, 25);
+        frame.add(arrivalCityCodeLabel);
+
         TextField arrivalCityCodeField = new TextField();
         arrivalCityCodeField.setText("sha");//todo
         arrivalCityCodeField.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
         arrivalCityCodeField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                arrivalCityCodeField.setText(arrivalCityCodeField.getText().trim());
+                MyUtils.validateCode(arrivalCityCodeField);
             }
         });
         arrivalCityCodeField.setBounds(
-                frame.getWidth() / 2, 170, frame.getWidth() / 2 - 50, 25);
+                frame.getWidth() / 2, 170, 50, 25);
         frame.add(arrivalCityCodeField);
 
 

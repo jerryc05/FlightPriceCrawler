@@ -2,6 +2,7 @@ package com.jerryc05;
 
 
 import java.awt.Desktop;
+import java.awt.TextField;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -20,7 +21,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 class MyUtils {
 
-    static final String VERSION = "0.1.4";
+    static final String VERSION = "0.1.5";
     static final String ACCEPT = "Accept";
     static final String ACCEPT_ALL = "*/*";
     static final String ACCEPT_ENCODING = "Accept-Encoding";
@@ -46,6 +47,18 @@ class MyUtils {
             httpsURLConnection.setRequestProperty("Cookie", parseCookie.toString());
         }
         return httpsURLConnection;
+    }
+
+    static String airportCodeToCityCode(String airportCode) {
+        switch (airportCode) {
+            case "nay":
+            case "pek":
+                return "bjs";
+            case "pvg":
+                return "sha";
+            default:
+                return airportCode;
+        }
     }
 
     static void closeConnection(
@@ -141,15 +154,12 @@ class MyUtils {
         return null;
     }
 
-    static String airportCodeToCityCode(String airportCode) {
-        switch (airportCode) {
-            case "nay":
-            case "pek":
-                return "bjs";
-            case "pvg":
-                return "sha";
-            default:
-                return airportCode;
+    static void validateCode(TextField textField) {
+        textField.setText(textField.getText().trim());
+        String text = textField.getText();
+        if (text.length() > 3) {
+            text = text.substring(0, 3);
+            textField.setText(text);
         }
     }
 }

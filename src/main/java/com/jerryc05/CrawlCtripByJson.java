@@ -79,16 +79,14 @@ class CrawlCtripByJson {
             logger.info(() -> "initCookie() successful!");
             if (!getProductsJson())
                 return false;
-            else {
+            else
                 logger.info(() -> "getProductsJson() successful!");
-                if (!getLowestPriceJson())
-                    return false;
-                else {
-                    logger.info(() -> "getLowestPriceJson() successful!");
-                    writeFile();
-                    MyUtils.openFile(excelFilePath, logger);
-                }
-            }
+            if (!getLowestPriceJson())
+                return false;
+            else
+                logger.info(() -> "getLowestPriceJson() successful!");
+            writeFile();
+            MyUtils.openFile(excelFilePath, logger);
         }
         return true;
     }
