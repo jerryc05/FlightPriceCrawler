@@ -9,6 +9,17 @@ public class RouteListItem implements Comparable<RouteListItem> {
     @JSONField(name = "legs")
     private List<LegsItem> legs;
 
+    @JSONField(name = "routeType")
+    private String routeType;
+
+    public String getRouteType() {
+        return routeType;
+    }
+
+    public void setRouteType(String routeType) {
+        this.routeType = routeType;
+    }
+
     public List<LegsItem> getLegs() {
         return legs;
     }
