@@ -202,6 +202,7 @@ public class FlightPriceCrawler {
                 CrawlCtripByJson.crawlCtripByJson(
                         departureAirportCode, arrivalAirportCode,
                         departDate, returnDate));
+
         if (fliggy) {
         }
         if (qunar) {
@@ -210,11 +211,12 @@ public class FlightPriceCrawler {
         }
         if (suanYa) {
         }
+
         try {
             if (cfCtrip != null && cfCtrip.get())
                 logger.info(() -> "finished!");
             infoLabel.setText("Crawing finished!");
-            Thread.sleep(2000);
+            Thread.sleep(1000);
             frame.dispose();
         } catch (Exception e) {
             MyUtils.handleException(e, logger);

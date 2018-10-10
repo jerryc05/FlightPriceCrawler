@@ -186,8 +186,8 @@ class CrawlCtripByJson {
             MyUtils.closeConnection(httpsURLConnection, logger);
         }
 
-        HSSFSheet sheet = workbook.createSheet(
-                departureAirportCode + "->" + arrivalAirportCode + "@" + departDate);
+        HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase()
+                + "->" + arrivalAirportCode.toUpperCase() + "@" + departDate);
 
         HSSFRow row0 = sheet.createRow(0);
         HSSFCell r0Cell = row0.createCell(0);
@@ -319,8 +319,8 @@ class CrawlCtripByJson {
             MyUtils.closeConnection(httpsURLConnection, logger);
         }
 
-        HSSFSheet sheet = workbook.createSheet(
-                departureAirportCode + "->" + arrivalAirportCode + "@LOWEST");
+        HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase()
+                + "->" + arrivalAirportCode.toUpperCase() + "@LOWEST");
         if (lowestPriceJsonReturned == null)
             return false;
         if (returnDate.equals("")) {
