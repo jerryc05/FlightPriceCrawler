@@ -6,7 +6,7 @@ about: Suggest an idea for this project/给这个项目提个建议
 
 **\*Important!\* Please update to the latest version before you submit a new issue.**
 **【重要!】请在提交新任务前升级到最新版本。**
-**Note that not all of the following are required. As long as the feature is concisely described, you submission is valid and helpful.**
+**Note that not all of the following are required. As long as the feature is concisely described, your submission is valid and helpful.**
 **提醒一下，您不需要填写以下所有信息。只要您能简练地说明您的想法，您就可以提交了。**
 
 
