@@ -2,14 +2,12 @@
 
 A self-developed flight prices crawling Java app targeting at best performance and smallest size.
 
-Looking for the latest release? Click [here to go to the release page](https://github.com/jerryc05/FlightPriceCrawler/releases)!
+**TL;DR?  Looking for the latest release?** Click [here to go to the release page](https://github.com/jerryc05/FlightPriceCrawler/releases)!
 
 - [Development Status](#development-status)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
-
-
 
 ---
 ## Development Status
@@ -23,21 +21,23 @@ Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://ww
 
 This app is compiled in **Java 11** but targeted at **Java 8**, so these are all you will need:
 
-- A computer that can run **Java**.
+- A **COMPUTER** that can run **Java**. You need a  **COMPUTER** to run this app! `Android` and `iOS` are not yet supported.
 - [Java Runtime Environment 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html) (chances are that you might have **Java** installed already).
 
 ## Getting Started
+
+**First: Goto the [release page](https://github.com/jerryc05/FlightPriceCrawler/releases) and download the JAR file!**
 
 - I'm using Windows
 > You are completely fine. Just double-click the jar file and you are all set.
 
 - I'm using Mac
-> A simpler way of doing this is to locate the app file in Finder and **Ctrl-Click** it, and select **Open** from the resultant menu. 
+> A simpler way of doing this is to locate the app file in Finder and **<kbd>Ctrl-Click</kbd>** it, and select **<kbd>Open</kbd>** from the resultant menu. 
 
-> **NOTE THAT** an exception might be created for opening it normally (i.e. by **double-clicking**).
+> **NOTE THAT** an exception might be created for opening it normally (i.e. by **<kbd>double-clicking</kbd>**).
 
 - I'm using Linux 
-> Unknown, it has never been tested.
+> I do not know! It has never been tested.
 
 ## Contributing
 
