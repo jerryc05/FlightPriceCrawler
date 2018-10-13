@@ -25,9 +25,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -200,7 +199,6 @@ class CrawlCtripByJson {
         if (productsJsonReturned.getData().getRecommendData() != null) {
             FlightsItem recFlight = productsJsonReturned.getData()
                     .getRecommendData().getRedirectSingleProduct().getFlights().get(0);
-
             row1.createCell(1).setCellValue(recFlight.getTransportNo());
             row1.createCell(2).setCellValue(recFlight.getDepartureCityName());
             row1.createCell(3).setCellValue(recFlight.getArrivalCityName());
@@ -331,79 +329,54 @@ class CrawlCtripByJson {
             MyUtils.closeConnection(httpsURLConnection, logger);
         }
 
-        HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase()
-                + "->" + arrivalAirportCode.toUpperCase() + "@LOWEST");
         if (lowestPriceJsonReturned == null)
             return false;
+        Map<String, Integer> oneWayPrice = lowestPriceJsonReturned.getData().getOneWayPrice()[0];
+        FlightLowestPriceInfo[] flightLowestPriceInfos = new FlightLowestPriceInfo[oneWayPrice.size()];
+        int index = 0;
+        for (Map.Entry<String, Integer> flight : oneWayPrice.entrySet()) {
+            String arrivalDateTemp = formatDate(flight.getKey());
+            FlightLowestPriceInfo flightLowestPriceInfo =
+                    new FlightLowestPriceInfo(arrivalDateTemp, flight.getValue());
+            logger.info(flightLowestPriceInfo::toString);
+            flightLowestPriceInfos[index] = flightLowestPriceInfo;
+            index++;
+        }
+        Arrays.sort(flightLowestPriceInfos, new FlightLowestPriceComparator());
+
+        HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase()
+                + "->" + arrivalAirportCode.toUpperCase() + "@LOWEST");
+        HSSFRow row0 = sheet.createRow(0);
         if (returnDate.equals("")) {
-            HSSFRow row0 = sheet.createRow(0);
             row0.createCell(0).setCellValue("Arrival Date");
             row0.createCell(1).setCellValue("Lowest Price");
-            int rowNumber = 1;
-
-            Map<String, Integer> oneWayPrice = lowestPriceJsonReturned.getData().getOneWayPrice()[0];
-            List<Map.Entry<String, Integer>> list = new LinkedList<>(oneWayPrice.entrySet());
-            list.sort((entry1, entry2) -> {
-                int priceCompareResult = entry1.getValue().compareTo(entry2.getValue());
-                if (priceCompareResult != 0)
-                    return priceCompareResult;
-                else {
-                    int year1 = Integer.parseInt(entry1.getKey().substring(0, 4));
-                    int year2 = Integer.parseInt(entry2.getKey().substring(0, 4));
-                    if (year1 != year2)
-                        return year1 - year2;
-                    else {
-                        int month1 = Integer.parseInt(entry1.getKey().substring(4, 6));
-                        int month2 = Integer.parseInt(entry2.getKey().substring(4, 6));
-                        if (month1 != month2)
-                            return month1 - month2;
-                        else
-                            return Integer.parseInt(entry1.getKey().substring(6))
-                                    - Integer.parseInt(entry2.getKey().substring(6));
-                    }
-                }
-            });
-
-
-            oneWayPrice = new LinkedHashMap<>();
-            for (Map.Entry<String, Integer> entry : list) {
-                oneWayPrice.put(entry.getKey(), entry.getValue());
-            }
-
-            for (Map.Entry<String, Integer> entry :
-                    oneWayPrice.entrySet()) {
-                HSSFRow row = sheet.createRow(rowNumber);
-                HSSFCell cell0 = row.createCell(0);
-                String date = entry.getKey();
-                date = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6);
-                cell0.setCellValue(date);
-                HSSFCell cell1 = row.createCell(1);
-                cell1.setCellValue(entry.getValue());
-
-                cell0.setCellStyle(dateStyle);
-                cell1.setCellStyle(currencyStyle);
-                rowNumber++;
-            }
-            sheet.autoSizeColumn(0);
-            sheet.setColumnWidth(1, 13 * 256);
-        } else {//todo
-            int rowNumber = 0;
-            int colNumber;
-            for (Map.Entry<String, Map<String, Integer>> departureEntry :
-                    lowestPriceJsonReturned.getData().getRoundTripPrice().entrySet()) {
-                HSSFRow row = sheet.createRow(rowNumber);
-                row.createCell(0).setCellValue(departureEntry.getKey());
-                colNumber = 1;
-                for (Map.Entry<String, Integer> arrivalEntry :
-                        departureEntry.getValue().entrySet()) {
-                    row.createCell(colNumber).setCellValue(
-                            arrivalEntry.getKey() + "=" + arrivalEntry.getValue());
-                    colNumber++;
-                }
-                rowNumber++;
-            }
+        } else {
+            row0.createCell(0).setCellValue("Departure Date");
+            row0.createCell(1).setCellValue("Arrival Date");
+            row0.createCell(2).setCellValue("Lowest Price");
         }
+
+        int rowNumber = 1;
+        for (FlightLowestPriceInfo flightLowestPriceInfo : flightLowestPriceInfos) {
+            HSSFRow row = sheet.createRow(rowNumber);
+            HSSFCell cell0 = row.createCell(0);
+            cell0.setCellValue(flightLowestPriceInfo.arrivalDate);
+            cell0.setCellStyle(dateStyle);
+            HSSFCell cell1 = row.createCell(1);
+            cell1.setCellValue(flightLowestPriceInfo.price);
+            cell1.setCellStyle(currencyStyle);
+            rowNumber++;
+        }
+        sheet.autoSizeColumn(0);
+        sheet.setColumnWidth(1, 13 * 256);
+
         return true;
+    }
+
+    private static String formatDate(String date) {
+        return date.substring(0, 4)
+                + "-" + date.substring(4, 6)
+                + "-" + date.substring(6);
     }
 
     private static void writeFile() {
