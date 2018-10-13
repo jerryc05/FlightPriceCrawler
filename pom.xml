@@ -6,7 +6,7 @@
 
     <groupId>com.jerryc05.FlightPriceCrawler</groupId>
     <artifactId>FlightPriceCrawler</artifactId>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
 
     <dependencies>
         <dependency>
