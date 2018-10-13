@@ -26,8 +26,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -197,7 +195,7 @@ class CrawlCtripByJson {
         r1c0.setCellValue("N/A");
         if (productsJsonReturned.getData().getRecommendData() != null) {
             FlightsItem recFlight = productsJsonReturned.getData()
-                    .getRecommendData().getRedirectSingleProduct().getFlights().get(0);
+                    .getRecommendData().getRedirectSingleProduct().getFlights()[0];
             row1.createCell(1).setCellValue(recFlight.getTransportNo());
             row1.createCell(2).setCellValue(recFlight.getDepartureCityName());
             row1.createCell(3).setCellValue(recFlight.getArrivalCityName());
@@ -230,15 +228,15 @@ class CrawlCtripByJson {
         sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 7));
         r2.setCellStyle(centeredStyle);
 
-        List<RouteListItem> routeLists = productsJsonReturned.getData().getRouteList();
-        Collections.sort(routeLists);
+        RouteListItem[] routeLists = productsJsonReturned.getData().getRouteList();
+        Arrays.sort(routeLists);
         LegsItem legs;
         int row = 4;
 
         for (RouteListItem routeList : routeLists) {
             if (!routeList.getRouteType().equals("Flight")) //todo
                 continue;
-            legs = routeList.getLegs().get(0);
+            legs = routeList.getLegs()[0];
             HSSFRow hssfRow;
             hssfRow = sheet.createRow(row);
 
@@ -260,11 +258,11 @@ class CrawlCtripByJson {
 
             HSSFCell c6 = hssfRow.createCell(6);
             c6.setCellValue(Math.min(legs.getCharacteristic().getLowestPrice(),
-                    legs.getCabins().get(0).getPrice().getPrice()));
+                    legs.getCabins()[0].getPrice().getPrice()));
             c6.setCellStyle(currencyStyle);
             if (airlineName.equals("东方航空")
                     && legs.getCharacteristic().getLowestPrice()
-                    != legs.getCabins().get(0).getPrice().getPrice())
+                    != legs.getCabins()[0].getPrice().getPrice())
                 hssfRow.createCell(9).setCellValue("售价为青老年折扣价，原价:¥"
                         + legs.getCharacteristic().getLowestPrice());
 
@@ -297,7 +295,7 @@ class CrawlCtripByJson {
         sheet.setColumnWidth(6, 8 * 256);
         sheet.setColumnWidth(7, 6 * 256);
         sheet.autoSizeColumn(8);
-        sheet.setColumnWidth(9, 35 * 256);
+        sheet.setColumnWidth(9, 30 * 256);
         return true;
     }
 

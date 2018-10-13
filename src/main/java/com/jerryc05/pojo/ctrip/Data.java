@@ -3,21 +3,19 @@ package com.jerryc05.pojo.ctrip;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import java.util.List;
-
 public class Data {
 
     @JSONField(name = "recommendData")
     private RecommendData recommendData;
 
     @JSONField(name = "routeList")
-    private List<RouteListItem> routeList;
+    private RouteListItem[] routeList;
 
     public void setRecommendData(RecommendData recommendData) {
         this.recommendData = recommendData;
     }
 
-    public void setRouteList(List<RouteListItem> routeList) {
+    public void setRouteList(RouteListItem[] routeList) {
         this.routeList = routeList;
     }
 
@@ -25,7 +23,7 @@ public class Data {
         return recommendData;
     }
 
-    public List<RouteListItem> getRouteList() {
+    public RouteListItem[] getRouteList() {
         return routeList;
     }
 }

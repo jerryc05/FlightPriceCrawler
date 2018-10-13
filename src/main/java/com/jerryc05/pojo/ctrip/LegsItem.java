@@ -2,8 +2,6 @@ package com.jerryc05.pojo.ctrip;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import java.util.List;
-
 public class LegsItem {
 
     @JSONField(name = "flight")
@@ -13,7 +11,7 @@ public class LegsItem {
     private Characteristic characteristic;
 
     @JSONField(name = "cabins")
-    private List<CabinsItem> cabins;
+    private CabinsItem[] cabins;
 
     public Flight getFlight() {
         return flight;
@@ -31,11 +29,11 @@ public class LegsItem {
         this.characteristic = characteristic;
     }
 
-    public List<CabinsItem> getCabins() {
+    public CabinsItem[] getCabins() {
         return cabins;
     }
 
-    public void setCabins(List<CabinsItem> cabins) {
+    public void setCabins(CabinsItem[] cabins) {
         this.cabins = cabins;
     }
 }

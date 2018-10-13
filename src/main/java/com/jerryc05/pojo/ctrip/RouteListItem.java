@@ -2,12 +2,10 @@ package com.jerryc05.pojo.ctrip;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import java.util.List;
-
 public class RouteListItem implements Comparable<RouteListItem> {
 
     @JSONField(name = "legs")
-    private List<LegsItem> legs;
+    private LegsItem[] legs;
 
     @JSONField(name = "routeType")
     private String routeType;
@@ -20,17 +18,17 @@ public class RouteListItem implements Comparable<RouteListItem> {
         this.routeType = routeType;
     }
 
-    public List<LegsItem> getLegs() {
+    public LegsItem[] getLegs() {
         return legs;
     }
 
-    public void setLegs(List<LegsItem> legs) {
+    public void setLegs(LegsItem[] legs) {
         this.legs = legs;
     }
 
     @Override
     public int compareTo(RouteListItem o) {
-        return this.getLegs().get(0).getCharacteristic().getLowestPrice()
-                - o.getLegs().get(0).getCharacteristic().getLowestPrice();
+        return this.getLegs()[0].getCharacteristic().getLowestPrice()
+                - o.getLegs()[0].getCharacteristic().getLowestPrice();
     }
 }

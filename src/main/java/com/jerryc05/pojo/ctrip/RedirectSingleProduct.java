@@ -2,18 +2,16 @@ package com.jerryc05.pojo.ctrip;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import java.util.List;
-
 public class RedirectSingleProduct {
 
     @JSONField(name = "flights")
-    private List<FlightsItem> flights;
+    private FlightsItem[] flights;
 
-    public List<FlightsItem> getFlights() {
+    public FlightsItem[] getFlights() {
         return flights;
     }
 
-    public void setFlights(List<FlightsItem> flights) {
+    public void setFlights(FlightsItem[] flights) {
         this.flights = flights;
     }
 }
