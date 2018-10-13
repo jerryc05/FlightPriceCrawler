@@ -336,13 +336,12 @@ class CrawlCtripByJson {
         int index = 0;
         for (Map.Entry<String, Integer> flight : oneWayPrice.entrySet()) {
             String arrivalDateTemp = formatDate(flight.getKey());
-            FlightLowestPriceInfo flightLowestPriceInfo =
+            flightLowestPriceInfos[index] =
                     new FlightLowestPriceInfo(arrivalDateTemp, flight.getValue());
-            logger.info(flightLowestPriceInfo::toString);
-            flightLowestPriceInfos[index] = flightLowestPriceInfo;
             index++;
         }
-        Arrays.sort(flightLowestPriceInfos, new FlightLowestPriceComparator());
+        Arrays.sort(flightLowestPriceInfos);
+
 
         HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase()
                 + "->" + arrivalAirportCode.toUpperCase() + "@LOWEST");

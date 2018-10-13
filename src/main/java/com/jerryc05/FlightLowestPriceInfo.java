@@ -1,6 +1,6 @@
 package com.jerryc05;
 
-class FlightLowestPriceInfo {
+class FlightLowestPriceInfo implements Comparable<FlightLowestPriceInfo> {
 
     String departureDate;//yyyy-mm-dd
     String arrivalDate;
@@ -28,7 +28,20 @@ class FlightLowestPriceInfo {
     }
 
     @Override
-    public String toString() {
-        return departureDate + "\t" + price;
+    public int compareTo(FlightLowestPriceInfo o2) {
+        if (departureDate == null)
+            if (price != o2.price)
+                return price - o2.price;
+            else if (!arrivalDate.substring(0, 4).equals(o2.arrivalDate.substring(0, 4)))
+                return Integer.parseInt(arrivalDate.substring(0, 4))
+                        - Integer.parseInt(o2.arrivalDate.substring(0, 4));
+            else if (!arrivalDate.substring(5, 7).equals(o2.arrivalDate.substring(5, 7)))
+                return Integer.parseInt(arrivalDate.substring(5, 7))
+                        - Integer.parseInt(o2.arrivalDate.substring(5, 7));
+            else
+                return Integer.parseInt(arrivalDate.substring(8))
+                        - Integer.parseInt(o2.arrivalDate.substring(8));
+        else
+            return 0;//todo
     }
 }
