@@ -155,7 +155,6 @@ class CrawlCtripByJson {
             productsJsonPost.getAirportParams()[0].setDcity(departureAirportCode);
             productsJsonPost.getAirportParams()[0].setAcity(arrivalAirportCode);
             productsJsonPost.getAirportParams()[0].setDate(departDate);
-            productsJsonPost.setSearchIndex(1);
 
             if (!returnDate.equals("")) {
                 productsJsonPost.setFlightWay("");//todo
@@ -217,6 +216,7 @@ class CrawlCtripByJson {
             r1c6.setCellStyle(currencyStyle);
 
             row1.createCell(7).setCellValue("N/A");
+            row1.createCell(8).setCellValue("N/A");
         } else {
             sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 7));
             r1c0.setCellStyle(centeredStyle);
@@ -242,7 +242,8 @@ class CrawlCtripByJson {
             HSSFRow hssfRow;
             hssfRow = sheet.createRow(row);
 
-            hssfRow.createCell(0).setCellValue(legs.getFlight().getAirlineName());
+            String airlineName = legs.getFlight().getAirlineName();
+            hssfRow.createCell(0).setCellValue(airlineName);
             hssfRow.createCell(1).setCellValue(legs.getFlight().getFlightNumber());
             hssfRow.createCell(2).setCellValue(legs.getFlight().getDepartureAirportInfo().getAirportName()
                     + legs.getFlight().getDepartureAirportInfo().getTerminal().getName());
@@ -258,10 +259,30 @@ class CrawlCtripByJson {
             c5.setCellStyle(centeredStyle);
 
             HSSFCell c6 = hssfRow.createCell(6);
-            c6.setCellValue(legs.getCharacteristic().getLowestPrice());
+            c6.setCellValue(Math.min(legs.getCharacteristic().getLowestPrice(),
+                    legs.getCabins().get(0).getPrice().getPrice()));
             c6.setCellStyle(currencyStyle);
+            if (airlineName.equals("东方航空")
+                    && legs.getCharacteristic().getLowestPrice()
+                    != legs.getCabins().get(0).getPrice().getPrice())
+                hssfRow.createCell(9).setCellValue("售价为青老年折扣价，原价:¥"
+                        + legs.getCharacteristic().getLowestPrice());
 
-            hssfRow.createCell(7).setCellValue(legs.getFlight().getCraftTypeName()
+            HSSFCell c7 = hssfRow.createCell(7);
+            switch (legs.getFlight().getMealType()) {
+                case "Meal":
+                    c7.setCellValue("正餐");
+                    break;
+                case "Snack":
+                    c7.setCellValue("零食");
+                    break;
+                case "None":
+                default:
+                    c7.setCellValue("木有");
+            }
+            c7.setCellStyle(centeredStyle);
+
+            hssfRow.createCell(8).setCellValue(legs.getFlight().getCraftTypeName()
                     + "(" + legs.getFlight().getCraftTypeCode() + ")"
                     + "（" + legs.getFlight().getCraftTypeKindDisplayName() + "）");
             hssfRow.setRowStyle(wrapRow);
@@ -274,7 +295,9 @@ class CrawlCtripByJson {
         sheet.setColumnWidth(4, 7 * 256);
         sheet.setColumnWidth(5, 7 * 256);
         sheet.setColumnWidth(6, 8 * 256);
-        sheet.autoSizeColumn(7);
+        sheet.setColumnWidth(7, 6 * 256);
+        sheet.autoSizeColumn(8);
+        sheet.setColumnWidth(9, 35 * 256);
         return true;
     }
 

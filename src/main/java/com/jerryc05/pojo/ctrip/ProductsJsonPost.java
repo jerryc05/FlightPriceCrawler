@@ -8,7 +8,7 @@ public class ProductsJsonPost {
     private String flightWay = "Oneway";
 
     @JSONField(name = "searchIndex")
-    private int searchIndex;
+    private int searchIndex = 1;
 
     @JSONField(name = "airportParams")
     private AirportParamsItem[] airportParams;
