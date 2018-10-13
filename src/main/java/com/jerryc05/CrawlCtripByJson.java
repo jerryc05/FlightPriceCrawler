@@ -263,7 +263,7 @@ class CrawlCtripByJson {
             if (airlineName.equals("东方航空")
                     && legs.getCharacteristic().getLowestPrice()
                     != legs.getCabins()[0].getPrice().getPrice())
-                hssfRow.createCell(9).setCellValue("售价为青老年折扣价，原价:¥"
+                hssfRow.createCell(9).setCellValue("售价为青老年折扣价，原最低价:¥"
                         + legs.getCharacteristic().getLowestPrice());
 
             HSSFCell c7 = hssfRow.createCell(7);
@@ -295,7 +295,7 @@ class CrawlCtripByJson {
         sheet.setColumnWidth(6, 8 * 256);
         sheet.setColumnWidth(7, 6 * 256);
         sheet.autoSizeColumn(8);
-        sheet.setColumnWidth(9, 30 * 256);
+        sheet.setColumnWidth(9, 35 * 256);
         return true;
     }
 
