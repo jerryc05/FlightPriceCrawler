@@ -5,24 +5,24 @@ import com.alibaba.fastjson.annotation.JSONField;
 public class RedirectMRoute {
 
     @JSONField(name = "openJaws")
-    private RoundNearsOpenJawsItem[] openJaws;
+    private FlightsItem[] openJaws;
 
     @JSONField(name = "roundNears")
-    private RoundNearsOpenJawsItem[] roundNears;
+    private FlightsItem[] roundNears;
 
-    public RoundNearsOpenJawsItem[] getRoundNears() {
+    public FlightsItem[] getRoundNears() {
         return roundNears;
     }
 
-    public void setRoundNears(RoundNearsOpenJawsItem[] roundNears) {
+    public void setRoundNears(FlightsItem[] roundNears) {
         this.roundNears = roundNears;
     }
 
-    public RoundNearsOpenJawsItem[] getOpenJaws() {
+    public FlightsItem[] getOpenJaws() {
         return openJaws;
     }
 
-    public void setOpenJaws(RoundNearsOpenJawsItem[] openJaws) {
+    public void setOpenJaws(FlightsItem[] openJaws) {
         this.openJaws = openJaws;
     }
 }

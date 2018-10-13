@@ -35,7 +35,7 @@ class MyUtils {
     private MyUtils() {
     }
 
-    static HttpsURLConnection addCookiesToConnection(
+    static void addCookiesToConnection(
             final HttpsURLConnection httpsURLConnection, Map<String, String> cookieMap) {
         if (cookieMap != null) {
             StringBuilder parseCookie = new StringBuilder();
@@ -46,7 +46,6 @@ class MyUtils {
                         .append(";");
             httpsURLConnection.setRequestProperty("Cookie", parseCookie.toString());
         }
-        return httpsURLConnection;
     }
 
     static String airportCodeToCityCode(String airportCode) {

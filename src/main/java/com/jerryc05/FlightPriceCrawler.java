@@ -141,8 +141,7 @@ public class FlightPriceCrawler {
         frame.add(returnDateLabel);
         TextField returnDateField = new TextField();
         returnDateField.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
-        returnDateField.setEnabled(false);//todo
-        returnDateField.setText("Not yet available ......");//todo
+        returnDateField.setText("2018-12-28");//todo
         returnDateField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -195,7 +194,7 @@ public class FlightPriceCrawler {
             FlightPriceCrawler.departureAirportCode = departureCityCodeField.getText().toLowerCase();
             FlightPriceCrawler.arrivalAirportCode = arrivalCityCodeField.getText().toLowerCase();
             FlightPriceCrawler.departDate = departureDateField.getText().toLowerCase();
-            FlightPriceCrawler.returnDate = "";//todo returnDateField.getText().toLowerCase();
+            FlightPriceCrawler.returnDate = returnDateField.getText().toLowerCase();
             if (ctrip.getState() || fliggy.getState() ||
                     qunar.getState() || ly.getState() || suanYa.getState()) {
                 infoLabel.setText("Processing, please wait...");

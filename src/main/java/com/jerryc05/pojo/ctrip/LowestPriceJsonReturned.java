@@ -5,13 +5,13 @@ import com.alibaba.fastjson.annotation.JSONField;
 public class LowestPriceJsonReturned {
 
     @JSONField(name = "data")
-    private DataReturned data;
+    private DataLowestProce data;
 
-    public DataReturned getData() {
+    public DataLowestProce getData() {
         return data;
     }
 
-    public void setData(DataReturned data) {
+    public void setData(DataLowestProce data) {
         this.data = data;
     }
 

@@ -10,6 +10,17 @@ public class RouteListItem implements Comparable<RouteListItem> {
     @JSONField(name = "routeType")
     private String routeType;
 
+    @JSONField(name = "combinedPrice")
+    private int combinedPrice;
+
+    public int getCombinedPrice() {
+        return combinedPrice;
+    }
+
+    public void setCombinedPrice(int combinedPrice) {
+        this.combinedPrice = combinedPrice;
+    }
+
     public String getRouteType() {
         return routeType;
     }

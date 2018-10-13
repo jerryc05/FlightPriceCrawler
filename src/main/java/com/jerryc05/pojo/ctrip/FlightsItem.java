@@ -19,6 +19,9 @@ public class FlightsItem {
     @JSONField(name = "price")
     private int price;
 
+    @JSONField(name = "productType")
+    private String productType;
+
     @JSONField(name = "arrivalCityName")
     private String arrivalCityName;
 
@@ -68,5 +71,13 @@ public class FlightsItem {
 
     public void setArrivalCityName(String arrivalCityName) {
         this.arrivalCityName = arrivalCityName;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 }
