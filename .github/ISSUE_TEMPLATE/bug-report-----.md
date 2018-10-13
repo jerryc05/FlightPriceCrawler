@@ -6,8 +6,8 @@ about: Create a report to help me improve/创建一个报告来帮助我改进
 
 **\*Important!\* Please update to the latest version before you submit a new issue.**
 **【重要!】请在提交新任务前升级到最新版本。**
-**Note that not all of the following are required. As long as the bug is concisely described, you are fine.**
-**提醒一下，您不需要填写以下所有信息。只要您能简练地描述这个错误，您就可以提交了。**
+**Note that not all of the following are required. As long as the bug is concisely described, your submission is valid and helpful.**
+**提醒一下，您不需要填写以下所有信息。只要您能简练地说明这个错误，您就可以提交了。**
 
 
 ### 1. Describe the bug/描述这个错误
