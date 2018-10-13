@@ -335,9 +335,8 @@ class CrawlCtripByJson {
         FlightLowestPriceInfo[] flightLowestPriceInfos = new FlightLowestPriceInfo[oneWayPrice.size()];
         int index = 0;
         for (Map.Entry<String, Integer> flight : oneWayPrice.entrySet()) {
-            String arrivalDateTemp = formatDate(flight.getKey());
             flightLowestPriceInfos[index] =
-                    new FlightLowestPriceInfo(arrivalDateTemp, flight.getValue());
+                    new FlightLowestPriceInfo(formatDate(flight.getKey()), flight.getValue());
             index++;
         }
         Arrays.sort(flightLowestPriceInfos);
@@ -347,32 +346,26 @@ class CrawlCtripByJson {
                 + "->" + arrivalAirportCode.toUpperCase() + "@LOWEST");
         HSSFRow row0 = sheet.createRow(0);
         row0.createCell(0).setCellValue("Departure Date");
-        row0.createCell(1).setCellValue("Arrival Date");
         if (returnDate.equals("")) {
-            row0.createCell(2).setCellValue("Lowest Price");
+            row0.createCell(1).setCellValue("Lowest Price");
         } else {
-            row0.createCell(2).setCellValue("Departure Date 2");
-            row0.createCell(3).setCellValue("Arrival Date 2");
-            row0.createCell(4).setCellValue("Lowest Price");
+            row0.createCell(1).setCellValue("Return Date");
+            row0.createCell(2).setCellValue("Lowest Price");
         }
 
         int rowNumber = 1;
         for (FlightLowestPriceInfo flightLowestPriceInfo : flightLowestPriceInfos) {
             HSSFRow row = sheet.createRow(rowNumber);
             HSSFCell cell0 = row.createCell(0);
-            cell0.setCellValue(departDate);
+            cell0.setCellValue(flightLowestPriceInfo.departureDate);
             cell0.setCellStyle(dateStyle);
             HSSFCell cell1 = row.createCell(1);
-            cell1.setCellValue(flightLowestPriceInfo.arrivalDate);
-            cell1.setCellStyle(dateStyle);
-            HSSFCell cell2 = row.createCell(2);
-            cell2.setCellValue(flightLowestPriceInfo.price);
-            cell2.setCellStyle(currencyStyle);
+            cell1.setCellValue(flightLowestPriceInfo.price);
+            cell1.setCellStyle(currencyStyle);
             rowNumber++;
         }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
+        sheet.setColumnWidth(0, 14 * 256);
+        sheet.setColumnWidth(2, 12 * 256);
         return true;
     }
 
