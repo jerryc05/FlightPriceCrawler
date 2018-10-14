@@ -58,7 +58,7 @@ public class FlightPriceCrawler {
             }
         });
 
-        Label welcomeLabel = new Label("Welcome to Domestic Flights Crawler v" + MyUtils.VERSION);
+        Label welcomeLabel = new Label("Welcome to Domestic Flights Crawler v" + Utils.VERSION);
         welcomeLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
         welcomeLabel.setAlignment(Label.CENTER);
         welcomeLabel.setBounds(0, 50, frame.getWidth(), 50);
@@ -82,7 +82,7 @@ public class FlightPriceCrawler {
         departureCityCodeField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                MyUtils.validateCode(departureCityCodeField);
+                Utils.validateCode(departureCityCodeField);
             }
         });
         departureCityCodeField.setBounds(
@@ -107,7 +107,7 @@ public class FlightPriceCrawler {
         arrivalCityCodeField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                MyUtils.validateCode(arrivalCityCodeField);
+                Utils.validateCode(arrivalCityCodeField);
             }
         });
         arrivalCityCodeField.setBounds(
@@ -197,6 +197,7 @@ public class FlightPriceCrawler {
             FlightPriceCrawler.returnDate = returnDateField.getText().toLowerCase();
             if (ctrip.getState() || fliggy.getState() ||
                     qunar.getState() || ly.getState() || suanYa.getState()) {
+                Utils.currentTime = System.currentTimeMillis();
                 infoLabel.setText("Processing, please wait...");
                 button.setEnabled(false);
                 FlightPriceCrawler.processInput(ctrip.getState(), fliggy.getState(),
@@ -235,7 +236,7 @@ public class FlightPriceCrawler {
             Thread.sleep(1000);
             frame.dispose();
         } catch (Exception e) {
-            MyUtils.handleException(e, logger);
+            Utils.handleException(e, logger);
         }
     }
 }

@@ -85,7 +85,7 @@ class CrawlCtripByJson {
             else
                 logger.info(() -> "getLowestPriceJson() successful!");
             writeFile();
-            MyUtils.openFile(excelFilePath, logger);
+            Utils.openFile(excelFilePath, logger);
             return state;
         }
     }
@@ -93,37 +93,45 @@ class CrawlCtripByJson {
     private static boolean initCookie() {
 
         HttpsURLConnection httpsURLConnection = null;
-        URL url;
 
         try {
+            URL url;
             if (returnDate.isEmpty())
                 url = new URL("https://flights.ctrip.com/itinerary/oneway/"
                         + departureAirportCode + "-" + arrivalAirportCode + "?date=" + departDate);
             else
                 url = new URL("https://flights.ctrip.com/itinerary/roundtrip/"
                         + departureAirportCode + "-" + arrivalAirportCode + "?date=" + departDate + "%2" + returnDate);
+            Utils.logTime(logger);
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
+            Utils.logTime(logger);
             httpsURLConnection.setRequestMethod("GET");
             httpsURLConnection.setConnectTimeout(5 * 1000);
             httpsURLConnection.setReadTimeout(5 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
-            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
-            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT_ENCODING, MyUtils.GZIP);
-            httpsURLConnection.setRequestProperty(MyUtils.USER_AGENT, MyUtils.MOZILLA);
-            MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
+            httpsURLConnection.setRequestProperty(Utils.ACCEPT, Utils.ACCEPT_ALL);
+            httpsURLConnection.setRequestProperty(Utils.ACCEPT_ENCODING, Utils.GZIP);
+            httpsURLConnection.setRequestProperty(Utils.USER_AGENT, Utils.MOZILLA);
+            Utils.addCookiesToConnection(httpsURLConnection, cookieMap);
+            Utils.logTime(logger);
+            Utils.logTime(logger);
+            Utils.logTime(logger);
             httpsURLConnection.connect();
 
+            Utils.logTime(logger);
+            Utils.logTime(logger);
+            Utils.logTime(logger);
             if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
                 throw new UnsupportedOperationException(
                         "HTTP " + httpsURLConnection.getResponseCode() + " Error\n"
                                 + httpsURLConnection.getResponseMessage());
-            cookieMap = MyUtils.saveCookies(httpsURLConnection.getHeaderFields(), cookieMap);
+            Utils.saveCookies(httpsURLConnection.getHeaderFields(), cookieMap);
         } catch (Exception e) {
-            MyUtils.handleException(e, logger);
+            Utils.handleException(e, logger);
             return false;
         } finally {
-            MyUtils.closeConnection(httpsURLConnection, logger);
+            Utils.closeConnection(httpsURLConnection, logger);
         }
         return true;
     }
@@ -131,23 +139,24 @@ class CrawlCtripByJson {
     private static boolean getProductsJson() {
 
         HttpsURLConnection httpsURLConnection = null;
-        URL url;
         ProductsJsonReturned productsJsonReturned;
 
         try {
-            url = new URL("https://flights.ctrip.com/itinerary/api/12808/products");
+            URL url = new URL("https://flights.ctrip.com/itinerary/api/12808/products");
+            Utils.logTime(logger);
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
+            Utils.logTime(logger);
             httpsURLConnection.setRequestMethod("POST");
             httpsURLConnection.setUseCaches(false);
             httpsURLConnection.setConnectTimeout(5 * 1000);
             httpsURLConnection.setReadTimeout(5 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
-            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
-            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT_ENCODING, MyUtils.GZIP);
-            httpsURLConnection.setRequestProperty(MyUtils.USER_AGENT, MyUtils.MOZILLA);
-            httpsURLConnection.setRequestProperty(MyUtils.CONTENT_TYPE, MyUtils.APP_JSON);
-            MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
+            httpsURLConnection.setRequestProperty(Utils.ACCEPT, Utils.ACCEPT_ALL);
+            httpsURLConnection.setRequestProperty(Utils.ACCEPT_ENCODING, Utils.GZIP);
+            httpsURLConnection.setRequestProperty(Utils.USER_AGENT, Utils.MOZILLA);
+            httpsURLConnection.setRequestProperty(Utils.CONTENT_TYPE, Utils.APP_JSON);
+            Utils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
             ProductsJsonPost productsJsonPost = new ProductsJsonPost();
             if (returnDate.isEmpty())
@@ -171,21 +180,21 @@ class CrawlCtripByJson {
             logger.info(() -> json);
 
             httpsURLConnection.setRequestProperty(
-                    MyUtils.CONTENT_LENGTH, Integer.toString(json.length()));
+                    Utils.CONTENT_LENGTH, Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
             outputStream.write(json.getBytes());
             outputStream.close();
             httpsURLConnection.connect();
 
-            final String result = MyUtils.processJson(httpsURLConnection, logger);
+            final String result = Utils.processJson(httpsURLConnection, logger);
             logger.info(() -> result);
             if (result == null) return false;
             productsJsonReturned = JSON.parseObject(result, ProductsJsonReturned.class);
         } catch (Exception e) {
-            MyUtils.handleException(e, logger);
+            Utils.handleException(e, logger);
             return false;
         } finally {
-            MyUtils.closeConnection(httpsURLConnection, logger);
+            Utils.closeConnection(httpsURLConnection, logger);
         }
 
         HSSFSheet sheet;
@@ -326,11 +335,10 @@ class CrawlCtripByJson {
     private static boolean getLowestPriceJson() {
 
         HttpsURLConnection httpsURLConnection = null;
-        URL url;
         LowestPriceJsonReturned lowestPriceJsonReturned;
 
         try {
-            url = new URL("https://flights.ctrip.com/itinerary/api/12808/lowestPrice");
+            URL url = new URL("https://flights.ctrip.com/itinerary/api/12808/lowestPrice");
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
             httpsURLConnection.setRequestMethod("POST");
             httpsURLConnection.setUseCaches(false);
@@ -338,15 +346,15 @@ class CrawlCtripByJson {
             httpsURLConnection.setReadTimeout(5 * 1000);
             httpsURLConnection.setDoOutput(true);
             httpsURLConnection.setDoInput(true);
-            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT, MyUtils.ACCEPT_ALL);
-            httpsURLConnection.setRequestProperty(MyUtils.ACCEPT_ENCODING, MyUtils.GZIP);
-            httpsURLConnection.setRequestProperty(MyUtils.USER_AGENT, MyUtils.MOZILLA);
-            httpsURLConnection.setRequestProperty(MyUtils.CONTENT_TYPE, MyUtils.APP_JSON);
-            MyUtils.addCookiesToConnection(httpsURLConnection, cookieMap);
+            httpsURLConnection.setRequestProperty(Utils.ACCEPT, Utils.ACCEPT_ALL);
+            httpsURLConnection.setRequestProperty(Utils.ACCEPT_ENCODING, Utils.GZIP);
+            httpsURLConnection.setRequestProperty(Utils.USER_AGENT, Utils.MOZILLA);
+            httpsURLConnection.setRequestProperty(Utils.CONTENT_TYPE, Utils.APP_JSON);
+            Utils.addCookiesToConnection(httpsURLConnection, cookieMap);
 
             LowestPriceJsonPost lowestPriceJsonPost = new LowestPriceJsonPost();
-            lowestPriceJsonPost.setDcity(MyUtils.airportCodeToCityCode(departureAirportCode));
-            lowestPriceJsonPost.setAcity(MyUtils.airportCodeToCityCode(arrivalAirportCode));
+            lowestPriceJsonPost.setDcity(Utils.airportCodeToCityCode(departureAirportCode));
+            lowestPriceJsonPost.setAcity(Utils.airportCodeToCityCode(arrivalAirportCode));
             if (returnDate.isEmpty())
                 lowestPriceJsonPost.setFlightWay("Oneway");
             else
@@ -357,21 +365,21 @@ class CrawlCtripByJson {
             logger.info(() -> json);
 
             httpsURLConnection.setRequestProperty(
-                    MyUtils.CONTENT_LENGTH, Integer.toString(json.length()));
+                    Utils.CONTENT_LENGTH, Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
             outputStream.write(json.getBytes());
             outputStream.close();
             httpsURLConnection.connect();
 
-            final String result = MyUtils.processJson(httpsURLConnection, logger);
+            final String result = Utils.processJson(httpsURLConnection, logger);
             logger.info(() -> result);
             if (result == null) return false;
             lowestPriceJsonReturned = JSON.parseObject(result, LowestPriceJsonReturned.class);
         } catch (Exception e) {
-            MyUtils.handleException(e, logger);
+            Utils.handleException(e, logger);
             return false;
         } finally {
-            MyUtils.closeConnection(httpsURLConnection, logger);
+            Utils.closeConnection(httpsURLConnection, logger);
         }
 
         if (lowestPriceJsonReturned == null)
@@ -490,11 +498,11 @@ class CrawlCtripByJson {
         try (FileOutputStream out = new FileOutputStream(excelFilePath)) {
             workbook.write(out);
         } catch (FileNotFoundException fNF) {
-            MyUtils.handleException(fNF, logger);
+            Utils.handleException(fNF, logger);
             excelFilePath += ".xls";
             writeFile();
         } catch (IOException iO) {
-            MyUtils.handleException(iO, logger);
+            Utils.handleException(iO, logger);
         }
     }
 }

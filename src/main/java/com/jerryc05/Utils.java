@@ -19,7 +19,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
-class MyUtils {
+class Utils {
 
     static final String VERSION = "0.1.7";
     static final String ACCEPT = "Accept";
@@ -31,8 +31,9 @@ class MyUtils {
     static final String CONTENT_TYPE = "Content-Type";
     static final String APP_JSON = "application/json";
     static final String CONTENT_LENGTH = "Content-Length";
+    static long currentTime;
 
-    private MyUtils() {
+    private Utils() {
     }
 
     static void addCookiesToConnection(
@@ -67,7 +68,7 @@ class MyUtils {
             if (httpsURLConnection != null)
                 httpsURLConnection.disconnect();
         } catch (Exception e) {
-            MyUtils.handleException(e, logger);
+            Utils.handleException(e, logger);
         }
     }
 
@@ -78,7 +79,12 @@ class MyUtils {
         logger.warning(stringWriter::toString);
     }
 
-    static Map<String, String> saveCookies(
+    static void logTime(final Logger logger) {
+        logger.info(() -> Long.toString(System.currentTimeMillis() - Utils.currentTime));
+        currentTime = System.currentTimeMillis();
+    }
+
+    static void saveCookies(
             final Map<String, List<String>> map, Map<String, String> cookieMap) {
 
         for (Map.Entry<String, List<String>> headerEntry : map.entrySet()) {
@@ -95,14 +101,13 @@ class MyUtils {
                 }
             }
         }
-        return cookieMap;
     }
 
     static void openFile(final String filePath, final Logger logger) {
         try {
             Desktop.getDesktop().open(new File(filePath));
         } catch (Exception e) {
-            MyUtils.handleException(e, logger);
+            Utils.handleException(e, logger);
         }
     }
 
@@ -148,7 +153,7 @@ class MyUtils {
                     return json;
                 }
         } catch (Exception e) {
-            MyUtils.handleException(e, logger);
+            Utils.handleException(e, logger);
         }
         return null;
     }
