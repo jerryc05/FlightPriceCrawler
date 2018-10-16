@@ -23,6 +23,7 @@ This app is compiled in **Java 11** but targeted at **Java 8**, so these are all
 
 - A **COMPUTER** that can run **Java**. You need a  **COMPUTER** to run this app! `Android` and `iOS` are not yet supported.
 - [Java Runtime Environment 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html) (chances are that you might have **Java** installed already).
+  - （需要 **Java** 的中文版下载网页？[点这里！](https://www.oracle.com/technetwork/cn/java/javase/downloads/index.html)） 
 
 ## Getting Started
 
