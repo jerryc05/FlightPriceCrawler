@@ -114,14 +114,8 @@ class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty(Utils.ACCEPT_ENCODING, Utils.GZIP);
             httpsURLConnection.setRequestProperty(Utils.USER_AGENT, Utils.MOZILLA);
             Utils.addCookiesToConnection(httpsURLConnection, cookieMap);
-            Utils.logTime(logger);
-            Utils.logTime(logger);
-            Utils.logTime(logger);
             httpsURLConnection.connect();
 
-            Utils.logTime(logger);
-            Utils.logTime(logger);
-            Utils.logTime(logger);
             if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
                 throw new UnsupportedOperationException(
                         "HTTP " + httpsURLConnection.getResponseCode() + " Error\n"
@@ -214,7 +208,7 @@ class CrawlCtripByJson {
         r0.setCellStyle(centeredStyle);
 
         if (productsJsonReturned.getData().getRecommendData() != null) {
-            if (returnDate.equals("")) {
+            if (returnDate.isEmpty()) {
                 FlightsItem recFlight = productsJsonReturned.getData()
                         .getRecommendData().getRedirectSingleProduct().getFlights()[0];
                 ++rowNumber;
@@ -257,8 +251,7 @@ class CrawlCtripByJson {
 
         RouteListItem[] routeLists = productsJsonReturned.getData().getRouteList();
         Arrays.sort(routeLists);
-        rowNumber++;
-        if (returnDate.equals("")) {
+        if (returnDate.isEmpty()) {
             for (RouteListItem routeList : routeLists) {
                 if (!routeList.getRouteType().equals("Flight"))
                     continue;
@@ -314,9 +307,18 @@ class CrawlCtripByJson {
                 }
                 c7.setCellStyle(centeredStyle);
 
-                row.createCell(8).setCellValue(legs.getFlight().getCraftTypeName()
-                        + "(" + legs.getFlight().getCraftTypeCode() + ")"
-                        + "（" + legs.getFlight().getCraftTypeKindDisplayName() + "）");
+                String craftTypeName = legs.getFlight().getCraftTypeName();
+                String craftTypeCode = "(" + legs.getFlight().getCraftTypeCode() + ")";
+                String craftTypeDisplayName = "\t（" +
+                        legs.getFlight().getCraftTypeKindDisplayName() + "）";
+                if (craftTypeName == null) {
+                    craftTypeName = "";
+                    craftTypeCode = legs.getFlight().getCraftTypeCode();
+                }
+                if (legs.getFlight().getCraftTypeKindDisplayName() == null)
+                    craftTypeDisplayName = "\t（中型）";
+                row.createCell(8).setCellValue(
+                        craftTypeName + craftTypeCode + craftTypeDisplayName);
             }
             sheet.setColumnWidth(0, 11 * 256);
             sheet.setColumnWidth(1, 10 * 256);
@@ -328,6 +330,82 @@ class CrawlCtripByJson {
             sheet.setColumnWidth(7, 6 * 256);
             sheet.autoSizeColumn(8);
             sheet.setColumnWidth(9, 35 * 256);
+        } else {
+            for (RouteListItem routeList : routeLists) {
+                if (!routeList.getRouteType().equals("Flight"))
+                    continue;
+                LegsItem legs = routeList.getLegs()[0];
+                HSSFRow row = sheet.createRow(++rowNumber);
+
+                String airlineName = legs.getFlight().getAirlineName();
+                HSSFCell c0 = row.createCell(0);
+                c0.setCellValue(airlineName);
+                c0.setCellStyle(centeredStyle);
+
+                row.createCell(1).setCellValue(legs.getFlight().getFlightNumber());
+
+                HSSFCell c2 = row.createCell(2);
+                c2.setCellValue(legs.getFlight().getDepartureAirportInfo().getAirportName()
+                        + legs.getFlight().getDepartureAirportInfo().getTerminal().getName());
+                c2.setCellStyle(centeredStyle);
+
+                HSSFCell c3 = row.createCell(3);
+                c3.setCellValue(legs.getFlight().getArrivalAirportInfo().getAirportName()
+                        + legs.getFlight().getArrivalAirportInfo().getTerminal().getName());
+                c3.setCellStyle(centeredStyle);
+
+                HSSFCell c4 = row.createCell(4);
+                c4.setCellValue(legs.getFlight().getDepartureDate().substring(11, 16));
+                c4.setCellStyle(centeredStyle);
+
+                HSSFCell c5 = row.createCell(5);
+                c5.setCellValue(legs.getFlight().getArrivalDate().substring(11, 16));
+                c5.setCellStyle(centeredStyle);
+
+                HSSFCell c6 = row.createCell(6);
+                c6.setCellValue(routeList.getCombinedPrice());
+                c6.setCellStyle(currencyStyle);
+                if (legs.getCharacteristic().isRoundTripDiscounts())
+                    row.createCell(9).setCellValue("往返优惠");
+
+                HSSFCell c7 = row.createCell(7);
+                switch (legs.getFlight().getMealType()) {
+                    case "Meal":
+                        c7.setCellValue("正餐");
+                        break;
+                    case "Snack":
+                        c7.setCellValue("零食");
+                        break;
+                    case "None":
+                    default:
+                        c7.setCellValue("木有");
+                }
+                c7.setCellStyle(centeredStyle);
+
+                String craftTypeName = legs.getFlight().getCraftTypeName();
+                String craftTypeCode = "(" + legs.getFlight().getCraftTypeCode() + ")";
+                String craftTypeDisplayName = "\t（" +
+                        legs.getFlight().getCraftTypeKindDisplayName() + "）";
+                if (craftTypeName == null) {
+                    craftTypeName = "";
+                    craftTypeCode = legs.getFlight().getCraftTypeCode();
+                }
+                if (legs.getFlight().getCraftTypeKindDisplayName() == null)
+                    craftTypeDisplayName = "\t（中型）";
+                row.createCell(8).setCellValue(
+                        craftTypeName + craftTypeCode + craftTypeDisplayName);
+            }
+            sheet.setColumnWidth(0, 11 * 256);
+            sheet.setColumnWidth(1, 10 * 256);
+            sheet.setColumnWidth(2, 8 * 2 * 256);
+            sheet.setColumnWidth(3, 8 * 2 * 256);
+            sheet.setColumnWidth(4, 7 * 256);
+            sheet.setColumnWidth(5, 7 * 256);
+            sheet.setColumnWidth(6, 8 * 256);
+            sheet.setColumnWidth(7, 6 * 256);
+            sheet.autoSizeColumn(8);
+            sheet.setColumnWidth(9, 35 * 256);
+
         }
         return true;
     }
@@ -384,7 +462,7 @@ class CrawlCtripByJson {
 
         if (lowestPriceJsonReturned == null)
             return false;
-        if (returnDate.equals("")) {
+        if (returnDate.isEmpty()) {
             Map<String, Integer> oneWayPrice =
                     lowestPriceJsonReturned.getData().getOneWayPrice()[0];
             FlightLowestPriceInfo[] flightLowestPriceInfos =

@@ -39,7 +39,10 @@ public class RouteListItem implements Comparable<RouteListItem> {
 
     @Override
     public int compareTo(RouteListItem o) {
-        return this.getLegs()[0].getCharacteristic().getLowestPrice()
-                - o.getLegs()[0].getCharacteristic().getLowestPrice();
+        if (this.getLegs()[0].getCharacteristic().getLowestPrice() != null)
+            return this.getLegs()[0].getCharacteristic().getLowestPrice()
+                    .compareTo(o.getLegs()[0].getCharacteristic().getLowestPrice());
+        else
+            return this.getCombinedPrice() - o.getCombinedPrice();
     }
 }
