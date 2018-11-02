@@ -2,6 +2,7 @@ package com.jerryc05;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.jerryc05.pojo.ctrip.AirportParamsItem;
 import com.jerryc05.pojo.ctrip.FlightsItem;
 import com.jerryc05.pojo.ctrip.LegsItem;
 import com.jerryc05.pojo.ctrip.LowestPriceJsonPost;
@@ -154,16 +155,16 @@ class CrawlCtripByJson {
 
             ProductsJsonPost productsJsonPost = new ProductsJsonPost();
             if (returnDate.isEmpty())
-                productsJsonPost.setAirportParams(new ProductsJsonPost.AirportParamsItem[1]);
+                productsJsonPost.setAirportParams(new AirportParamsItem[1]);
             else
-                productsJsonPost.setAirportParams(new ProductsJsonPost.AirportParamsItem[2]);
-            productsJsonPost.getAirportParams()[0] = productsJsonPost.new AirportParamsItem();
+                productsJsonPost.setAirportParams(new AirportParamsItem[2]);
+            productsJsonPost.getAirportParams()[0] = new AirportParamsItem();
             productsJsonPost.getAirportParams()[0].setDcity(departureAirportCode);
             productsJsonPost.getAirportParams()[0].setAcity(arrivalAirportCode);
             productsJsonPost.getAirportParams()[0].setDate(departDate);
             if (!returnDate.isEmpty()) {
                 productsJsonPost.setFlightWay("Roundtrip");
-                productsJsonPost.getAirportParams()[1] = productsJsonPost.new AirportParamsItem();
+                productsJsonPost.getAirportParams()[1] = new AirportParamsItem();
                 productsJsonPost.getAirportParams()[1].setDcity(arrivalAirportCode);
                 productsJsonPost.getAirportParams()[1].setAcity(departureAirportCode);
                 productsJsonPost.getAirportParams()[1].setDate(returnDate);
@@ -224,7 +225,7 @@ class CrawlCtripByJson {
 
                 FlightsItem[] roundNears = productsJsonReturned.getData()
                         .getRecommendData().getRedirectMRoute().getRoundNears();
-                if (roundNears != null)
+                if (roundNears.length != 0)
                     for (int i = 0; i <= 1; i++) {
                         ++rowNumber;
                         parseRecommendData(sheet, roundNears[i], i, rowNumber);
@@ -250,7 +251,7 @@ class CrawlCtripByJson {
         r2.setCellStyle(centeredStyle);
 
         RouteListItem[] routeLists = productsJsonReturned.getData().getRouteList();
-        Arrays.sort(routeLists);
+        Arrays.parallelSort(routeLists);
         if (returnDate.isEmpty()) {
             for (RouteListItem routeList : routeLists) {
                 if (!routeList.getRouteType().equals("Flight"))
@@ -473,7 +474,7 @@ class CrawlCtripByJson {
                         new FlightLowestPriceInfo(formatDate(flight.getKey()), flight.getValue());
                 index++;
             }
-            Arrays.sort(flightLowestPriceInfos);
+            Arrays.parallelSort(flightLowestPriceInfos);
 
             HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase()
                     + "->" + arrivalAirportCode.toUpperCase() + "@最低价");
