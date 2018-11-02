@@ -12,20 +12,21 @@ A self-developed flight prices crawling Java app targeting at best performance a
 ---
 ## Development Status
 
-Supported: [**Ctrip**](http://ctrip.com) *(One-way only)*.
+Supported: [**Ctrip**](http://ctrip.com).
 
-Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://www.qunar.com),  [**Ly**](https://www.ly.com/),  [**Suanya**](http://www.suanya.cn/).
+Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://www.qunar.com),  [**Ly**](https://www.ly.com/),  [**Suanya**](http://www.suanya.cn/), and much more.
 
 
 ## Requirements
 
-This app is compiled in **Java 11** but targeted at **Java 8**, so these are all you will need:
+This app is targeted at **Java 8**, so these are all you will need:
 
 - A **COMPUTER** that can run **Java**.
   - You need a  **COMPUTER** to run this app! `Android` and `iOS` are not yet supported.
-- [Java Runtime Environment (JRE) 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html).
+- [Java Runtime Environment (JRE) 8+](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
   - The chances are that you might have **Java** installed already if you played games like `Minecraft` before, but I encourage you to grab the latest version just for the sake of updating it.
-  - 需要 **Java** 下载网页的中文版？可以[点这里试试！](https://www.oracle.com/technetwork/cn/java/javase/downloads/index.html)请确保下载的是 **JRE 8 或更新的版本！**。
+  - <del>需要 **Java** 下载网页的中文版？可以[点这里试试！](https://www.oracle.com/technetwork/cn/java/javase/downloads/index.html)请确保下载的是 **JRE 8 或更新的版本！**。</del>
+  - 中文版网页版本更新速度太慢了，还是去英文官网吧2333...
 
 ## Getting Started
 
