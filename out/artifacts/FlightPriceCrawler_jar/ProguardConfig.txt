@@ -1,5 +1,5 @@
 -injars FlightPriceCrawler.jar
--outjars 'C:\Users\Jerry\Desktop\FlightPriceCrawler.jar'
+-outjars 'D:\FlightPriceCrawler.jar'
 
 -libraryjars 'D:\Program Files\Java\jre8\lib\rt.jar'
 
