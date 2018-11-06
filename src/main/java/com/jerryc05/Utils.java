@@ -26,7 +26,7 @@ class Utils {
     static final String ACCEPT_ENCODING = "Accept-Encoding";
     static final String GZIP = "gzip";
     static final String USER_AGENT = "User-Agent";
-    static final String MOZILLA = "";
+    static final String USER_AGENT_CONTENT = "";
     static final String CONTENT_TYPE = "Content-Type";
     static final String APP_JSON = "application/json";
     static final String CONTENT_LENGTH = "Content-Length";

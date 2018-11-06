@@ -42,8 +42,8 @@ import static com.jerryc05.Utils.APP_JSON;
 import static com.jerryc05.Utils.CONTENT_LENGTH;
 import static com.jerryc05.Utils.CONTENT_TYPE;
 import static com.jerryc05.Utils.GZIP;
-import static com.jerryc05.Utils.MOZILLA;
 import static com.jerryc05.Utils.USER_AGENT;
+import static com.jerryc05.Utils.USER_AGENT_CONTENT;
 import static com.jerryc05.Utils.addCookiesToConnection;
 import static com.jerryc05.Utils.airportCodeToCityCode;
 import static com.jerryc05.Utils.closeConnection;
@@ -131,7 +131,7 @@ class CrawlCtripByJson {
             httpsURLConnection.setDoInput(true);
             httpsURLConnection.setRequestProperty(ACCEPT, ACCEPT_ALL);
             httpsURLConnection.setRequestProperty(ACCEPT_ENCODING, GZIP);
-            httpsURLConnection.setRequestProperty(USER_AGENT, MOZILLA);
+            httpsURLConnection.setRequestProperty(USER_AGENT, USER_AGENT_CONTENT);
             addCookiesToConnection(httpsURLConnection, cookieMap);
             httpsURLConnection.connect();
 
@@ -167,7 +167,7 @@ class CrawlCtripByJson {
             httpsURLConnection.setDoInput(true);
             httpsURLConnection.setRequestProperty(ACCEPT, ACCEPT_ALL);
             httpsURLConnection.setRequestProperty(ACCEPT_ENCODING, GZIP);
-            httpsURLConnection.setRequestProperty(USER_AGENT, MOZILLA);
+            httpsURLConnection.setRequestProperty(USER_AGENT, USER_AGENT_CONTENT);
             httpsURLConnection.setRequestProperty(CONTENT_TYPE, APP_JSON);
             addCookiesToConnection(httpsURLConnection, cookieMap);
 
@@ -446,7 +446,7 @@ class CrawlCtripByJson {
             httpsURLConnection.setDoInput(true);
             httpsURLConnection.setRequestProperty(ACCEPT, ACCEPT_ALL);
             httpsURLConnection.setRequestProperty(ACCEPT_ENCODING, GZIP);
-            httpsURLConnection.setRequestProperty(USER_AGENT, MOZILLA);
+            httpsURLConnection.setRequestProperty(USER_AGENT, USER_AGENT_CONTENT);
             httpsURLConnection.setRequestProperty(CONTENT_TYPE, APP_JSON);
             addCookiesToConnection(httpsURLConnection, cookieMap);
 
