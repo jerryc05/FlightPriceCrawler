@@ -3,10 +3,9 @@ package com.jerryc05;
 
 import java.awt.Desktop;
 import java.awt.TextField;
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
@@ -111,8 +110,8 @@ class Utils {
         }
     }
 
-    static String processJson(
-            final HttpsURLConnection httpsURLConnection, final Logger logger) {
+    static String processJson(final HttpsURLConnection httpsURLConnection, final Logger logger) {
+        String json = null;
 
         try {
             if (httpsURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK)
@@ -121,8 +120,9 @@ class Utils {
             if (httpsURLConnection.getContentLength() == 0)
                 throw new UnsupportedOperationException(
                         "Content Length = " + httpsURLConnection.getContentLength());
-            InputStream inputStream;
             final String contentEncoding = httpsURLConnection.getContentEncoding();
+
+            InputStream inputStream;
             if (contentEncoding == null)
                 inputStream = httpsURLConnection.getInputStream();
             else
@@ -141,21 +141,20 @@ class Utils {
             for (String encoding : contentTypes)
                 if (encoding.contains("charset=")) {
                     encoding = encoding.trim();
-                    BufferedReader bufferedReader = new BufferedReader(
-                            new InputStreamReader(inputStream, encoding.substring(8)));
-                    String jsonReturned;
-                    String json = null;
-                    while ((jsonReturned = bufferedReader.readLine()) != null) {
-                        json = jsonReturned;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    return json;
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = inputStream.read(buffer)) != -1)
+                        byteArrayOutputStream.write(buffer, 0, length);
+
+                    json = byteArrayOutputStream.toString(encoding.substring(8));
                 }
         } catch (Exception e) {
             Utils.handleException(e, logger);
         }
-        return null;
+
+        return json;
     }
 
     static void validateCode(TextField textField) {
