@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -83,8 +85,8 @@ class CrawlCtripByJson {
         CrawlCtripByJson.departDate = departDate;
         CrawlCtripByJson.returnDate = returnDate;
         excelFilePath = FileSystemView.getFileSystemView().getHomeDirectory()
-                + "\\携程网爬虫[" + departureAirportCode.toUpperCase() + " - "
-                + arrivalAirportCode.toUpperCase() + " @ " + departDate + "].xls";
+                + "\\携程网爬虫[" + departureAirportCode.toUpperCase(Locale.US) + " - "
+                + arrivalAirportCode.toUpperCase(Locale.US) + " @ " + departDate + "].xls";
         dateStyle.setDataFormat(dataFormat.getFormat("m\"月\"d\"日\";@"));
         currencyStyle.setDataFormat(dataFormat.getFormat("[$¥-zh-CN]#,##0"));
         currencyStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -195,7 +197,7 @@ class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty(
                     CONTENT_LENGTH, Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
-            outputStream.write(json.getBytes());
+            outputStream.write(json.getBytes(StandardCharsets.UTF_8));
             outputStream.close();
             httpsURLConnection.connect();
 
@@ -213,11 +215,11 @@ class CrawlCtripByJson {
 
         HSSFSheet sheet;
         if (returnDate.isEmpty())
-            sheet = workbook.createSheet(departureAirportCode.toUpperCase()
-                    + "->" + arrivalAirportCode.toUpperCase() + "@" + departDate);
+            sheet = workbook.createSheet(departureAirportCode.toUpperCase(Locale.US)
+                    + "->" + arrivalAirportCode.toUpperCase(Locale.US) + "@" + departDate);
         else
-            sheet = workbook.createSheet(departureAirportCode.toUpperCase()
-                    + "<=>" + arrivalAirportCode.toUpperCase() + "@" + departDate);
+            sheet = workbook.createSheet(departureAirportCode.toUpperCase(Locale.US)
+                    + "<=>" + arrivalAirportCode.toUpperCase(Locale.US) + "@" + departDate);
 
         int rowNumber = 0;
         HSSFRow row0 = sheet.createRow(rowNumber);
@@ -259,12 +261,12 @@ class CrawlCtripByJson {
         HSSFRow row2 = sheet.createRow(rowNumber);
         HSSFCell r2 = row2.createCell(0);
         if (returnDate.isEmpty())
-            r2.setCellValue(departDate + " 出发，从 " + departureAirportCode.toUpperCase()
-                    + " 到 " + arrivalAirportCode.toUpperCase() + " 的所有航班：");
+            r2.setCellValue(departDate + " 出发，从 " + departureAirportCode.toUpperCase(Locale.US)
+                    + " 到 " + arrivalAirportCode.toUpperCase(Locale.US) + " 的所有航班：");
         else
             r2.setCellValue(departDate + " 出发 " + returnDate + " 返回，从 " +
-                    departureAirportCode.toUpperCase()
-                    + " 往返 " + arrivalAirportCode.toUpperCase() + " 的所有航班：");
+                    departureAirportCode.toUpperCase(Locale.US)
+                    + " 往返 " + arrivalAirportCode.toUpperCase(Locale.US) + " 的所有航班：");
         sheet.addMergedRegionUnsafe(new
                 CellRangeAddress(rowNumber, rowNumber, 0, 8));
         r2.setCellStyle(centeredStyle);
@@ -465,7 +467,7 @@ class CrawlCtripByJson {
             httpsURLConnection.setRequestProperty(
                     CONTENT_LENGTH, Integer.toString(json.length()));
             OutputStream outputStream = httpsURLConnection.getOutputStream();
-            outputStream.write(json.getBytes());
+            outputStream.write(json.getBytes(StandardCharsets.UTF_8));
             outputStream.close();
             httpsURLConnection.connect();
 
@@ -495,8 +497,8 @@ class CrawlCtripByJson {
             }
             Arrays.parallelSort(flightLowestPriceInfos);
 
-            HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase()
-                    + "->" + arrivalAirportCode.toUpperCase() + "@最低价");
+            HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase(Locale.US)
+                    + "->" + arrivalAirportCode.toUpperCase(Locale.US) + "@最低价");
             int rowNumber = -1;
             HSSFRow row0 = sheet.createRow(++rowNumber);
             row0.createCell(0).setCellValue("出发日期");
@@ -524,8 +526,8 @@ class CrawlCtripByJson {
                             formatDate(flight.getKey()), flight.getValue()));
             Collections.sort(flightLowestPriceInfos);
 
-            HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase()
-                    + "<=>" + arrivalAirportCode.toUpperCase() + "@最低价");
+            HSSFSheet sheet = workbook.createSheet(departureAirportCode.toUpperCase(Locale.US)
+                    + "<=>" + arrivalAirportCode.toUpperCase(Locale.US) + "@最低价");
             int rowNumber = -1;
             HSSFRow row0 = sheet.createRow(++rowNumber);
             row0.createCell(0).setCellValue("出发日期");

@@ -10,6 +10,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -191,8 +192,10 @@ public class FlightPriceCrawler {
         frame.setVisible(true);
 
         button.addActionListener(e -> {
-            FlightPriceCrawler.departureAirportCode = departureCityCodeField.getText().toLowerCase();
-            FlightPriceCrawler.arrivalAirportCode = arrivalCityCodeField.getText().toLowerCase();
+            FlightPriceCrawler.departureAirportCode =
+                    departureCityCodeField.getText().toLowerCase(Locale.US);
+            FlightPriceCrawler.arrivalAirportCode =
+                    arrivalCityCodeField.getText().toLowerCase(Locale.US);
             FlightPriceCrawler.departDate = departureDateField.getText().toLowerCase();
             FlightPriceCrawler.returnDate = returnDateField.getText().toLowerCase();
             if (ctrip.getState() || fliggy.getState() ||
