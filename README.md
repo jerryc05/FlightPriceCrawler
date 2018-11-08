@@ -1,6 +1,6 @@
 # [Flight Price Crawler](https://github.com/jerryc05/FlightPriceCrawler)
 
-A self-developed flight prices crawling Java app targeting at best performance and smallest size.
+A flight-prices crawling Java app targeting at best performance and smallest size.
 
 **TL;DR?  Looking for the latest release?** Click [here to go to the release page](https://github.com/jerryc05/FlightPriceCrawler/releases)!
 
