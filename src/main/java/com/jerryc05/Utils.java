@@ -30,7 +30,6 @@ class Utils {
     static final String CONTENT_TYPE = "Content-Type";
     static final String APP_JSON = "application/json";
     static final String CONTENT_LENGTH = "Content-Length";
-    static long currentTime;
 
     private Utils() {
     }
@@ -76,11 +75,6 @@ class Utils {
         StringWriter stringWriter = new StringWriter();
         e.printStackTrace(new PrintWriter(stringWriter));
         logger.warning(stringWriter::toString);
-    }
-
-    static void logTime(final Logger logger) {
-        logger.info(() -> Long.toString(System.currentTimeMillis() - Utils.currentTime));
-        currentTime = System.currentTimeMillis();
     }
 
     static void saveCookies(
