@@ -200,7 +200,6 @@ public class FlightPriceCrawler {
             FlightPriceCrawler.returnDate = returnDateField.getText().toLowerCase();
             if (ctrip.getState() || fliggy.getState() ||
                     qunar.getState() || ly.getState() || suanYa.getState()) {
-                Utils.currentTime = System.currentTimeMillis();
                 infoLabel.setText("Processing, please wait...");
                 button.setEnabled(false);
                 FlightPriceCrawler.processInput(ctrip.getState(), fliggy.getState(),
