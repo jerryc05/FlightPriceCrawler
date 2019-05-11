@@ -12,6 +12,10 @@ A self-developed flight prices crawling Java app targeting at best performance a
 ---
 ## Development Status
 
+- *Current development priority: **LOW**.* 
+
+- *Migrating core functions to python as a [**pypi repo package**](<https://github.com/jerryc05/jerryc05-Pypi>)!*
+
 Supported: [**Ctrip**](http://ctrip.com).
 
 Not yet Supported: [**Fliggy**](https://www.fliggy.com/), [**Qunar**](https://www.qunar.com),  [**Ly**](https://www.ly.com/),  [**Suanya**](http://www.suanya.cn/), and much more.
